@@ -1,0 +1,20 @@
+﻿@using Microsoft.AspNetCore.Identity
+
+<ul class="navbar-nav">
+    @if (User != null && User.Identity.IsAuthenticated && !String.IsNullOrEmpty(User.Identity.Name))
+    {
+<li class="nav-item">
+    <form class="form-inline" asp-action="UserLogout" asp-controller="Home">
+        <button type="submit" class="nav-link btn btn-link text-dark" formmethod="post">Logout @User.Identity.Name</button>
+    </form>
+</li>
+    }
+    else
+    {
+<li class="nav-item">
+    <form class="form-inline" asp-action="UserLogin" asp-controller="Home">
+        <button type="submit" class="nav-link btn btn-link text-dark" formmethod="post">Login with Bluebeam</button>
+    </form>
+</li>
+    }
+</ul>
