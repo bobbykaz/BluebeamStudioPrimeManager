@@ -39,8 +39,17 @@ namespace PrimeCollaborationManager.Controllers
         public async Task<IActionResult> Details(string collabId)
         {
             await InitClient();
-            var projects = await _ProjectsService.GetCollabDetailsAsync(collabId);
-            return View(projects);
+            var detail = await _ProjectsService.GetCollabDetailsAsync(collabId);
+            return View(detail);
+        }
+
+        public async Task<IActionResult> PermissionDetails(string collabId)
+        {
+            await InitClient();
+            var detail = await _ProjectsService.GetCollabDetailsAsync(collabId);
+            var perms = await _ProjectsService.GetCollabPermissions(collabId);
+            var model = new CollaborationDetails { Collab = detail, Permissions = perms };
+            return View(model);
         }
 
         [HttpGet]

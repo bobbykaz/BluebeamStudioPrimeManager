@@ -9,6 +9,7 @@ namespace PrimeCollaborationManager.Services
         Task<List<Models.Collaboration>> GetCollabListAsync();
         Task<Models.Collaboration> GetCollabDetailsAsync(string id);
         Task<Models.Collaboration> CreateCollabAsync(string id, string name, bool restrictUsers);
+        Task<List<Studio.Api.Model.Permissions.Permission>> GetCollabPermissions(string id);
         Task SetCollabPermissions(string id, string permission, bool? allow);
         List<string> GetCollabPermissionTypes();
         Task<string> CreateCollabAsync(IFormCollection form);

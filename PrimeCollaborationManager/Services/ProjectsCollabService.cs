@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using PrimeCollaborationManager.Models;
 using Studio.Api.Client;
 using Studio.Api.Model;
+using Studio.Api.Model.Permissions;
 
 namespace PrimeCollaborationManager.Services
 {
@@ -63,10 +64,7 @@ namespace PrimeCollaborationManager.Services
             string name = "Default";
             bool restricted = false;
             bool notification = false;
-            PermissionsSettingsList pList = new PermissionsSettingsList()
-            {
-                Permissions = new List<PermissionSetting>()
-            };
+            var pList = new List<Permission>();
             foreach (var key in form.Keys)
             {
                 var formValIsBool = bool.TryParse(form[key], out bool formVal);
@@ -89,16 +87,33 @@ namespace PrimeCollaborationManager.Services
                         break;
                     default:
                         if(formValIsBool)
-                            pList.Permissions.Add(new PermissionSetting { Type = key, Allow = formVal });
+                            pList.Add(new Permission { Type = key, Allow = PermissionValue.Allow });
                         break;
                 }
             }
 
             var projectId = await _Client.CreateProject(name, notification, restricted);
 
-            //permissions?
+            var chosenPermTypes = pList.Select(s => s.Type).ToList();
+            var missingTypes = GetCollabPermissionTypes();
+            missingTypes.RemoveAll(s => chosenPermTypes.Contains(s));
+            foreach (var missingPerm in missingTypes)
+            { 
+                pList.Add(new Permission { Type = missingPerm, Allow = PermissionValue.Deny });
+            }
+            
+            foreach (var perm in pList)
+            {
+                await _Client.UpdateProjectPermissions(projectId, perm);
+            }
 
             return projectId;
+        }
+
+        public async Task<List<Permission>> GetCollabPermissions(string id)
+        {
+            var perms = await _Client.GetProjectPermissions(id);
+            return perms.ProjectPermissions;
         }
     }
 }

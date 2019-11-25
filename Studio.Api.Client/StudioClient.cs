@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Studio.Api.Model;
+using Studio.Api.Model.Permissions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -71,6 +72,24 @@ namespace Studio.Api.Client
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
             var responseObj = JsonConvert.DeserializeObject<T>(content);
+
+            return responseObj;
+        }
+
+        protected async Task Put<TRequest>(string route, TRequest request)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(request), System.Text.Encoding.UTF8, "application/json");
+            var response = await _Client.PutAsync(route, content);
+            response.EnsureSuccessStatusCode();
+        }
+
+        protected async Task<TResponse> Put<TRequest, TResponse>(string route, TRequest request)
+        {
+            var content = new StringContent(JsonConvert.SerializeObject(request), System.Text.Encoding.UTF8, "application/json");
+            var response = await _Client.PutAsync(route, content);
+            response.EnsureSuccessStatusCode();
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var responseObj = JsonConvert.DeserializeObject<TResponse>(responseContent);
 
             return responseObj;
         }
@@ -154,42 +173,84 @@ namespace Studio.Api.Client
 
         public async Task<ProjectFolder> GetProjectFolderDetails(string projectId, int folderId)
         {
-            return await Get<ProjectFolder>($"{_StudioApiBase}/projects/{projectId}/folders/{folderId}");
+            return await Get<ProjectFolder>($"projects/{projectId}/folders/{folderId}");
         }
 
         public async Task<ProjectFolderContents> GetProjectFolderContents( string projectId, int folderId)
         {
-            return await Get<ProjectFolderContents>($"{_StudioApiBase}/projects/{projectId}/folders/{folderId}/items");
+            return await Get<ProjectFolderContents>($"projects/{projectId}/folders/{folderId}/items");
         }
 
         public async Task<ProjectFileDetails> GetProjectFileDetails(string projectId, int fileId)
         {
-            return await Get<ProjectFileDetails>($"{_StudioApiBase}/projects/{projectId}/folders/{fileId}");
+            return await Get<ProjectFileDetails>($"projects/{projectId}/folders/{fileId}");
         }
 
         public async Task<ProjectFileUploadResponse> BeginUploadProjectFile(string projectId, ProjectFileUploadRequest request)
         {
-            return await Post<ProjectFileUploadRequest, ProjectFileUploadResponse>($"{_StudioApiBase}/projects/{projectId}/files", request);
+            return await Post<ProjectFileUploadRequest, ProjectFileUploadResponse>($"projects/{projectId}/files", request);
         }
 
         public async Task ConfirmUploadProjectFile(string projectId, int projectFileId)
         {
-            await Post($"{_StudioApiBase}/projects/{projectId}/files/{projectFileId}/confirm-upload");
+            await Post($"projects/{projectId}/files/{projectFileId}/confirm-upload");
         }
 
         public async Task<ProjectFileRevisionsList> GetProjectFileRevisions(string projectId, int fileId)
         {
-            return await Get<ProjectFileRevisionsList>($"{_StudioApiBase}/projects/{projectId}/files/{fileId}/revisions");
+            return await Get<ProjectFileRevisionsList>($"projects/{projectId}/files/{fileId}/revisions");
         }
 
         public async Task<ProjectFileRevisionDetails> GetProjectFileRevisionDetails(string projectId, int fileId, int revisionId)
         {
-            return await Get<ProjectFileRevisionDetails>($"{_StudioApiBase}/projects/{projectId}/files/{fileId}/revisions/{revisionId}");
+            return await Get<ProjectFileRevisionDetails>($"projects/{projectId}/files/{fileId}/revisions/{revisionId}");
         }
 
         public async Task RestoreProjectFileRevision(string projectId, int fileId, int revisionId)
         {
-            await Post($"{_StudioApiBase}/projects/{projectId}/files/{fileId}/revisions/{revisionId}/restore");
+            await Post($"projects/{projectId}/files/{fileId}/revisions/{revisionId}/restore");
+        }
+        #endregion
+
+        #region Permissions
+        public async Task<ProjectPermissionsList> GetProjectPermissions(string projectId)
+        {
+            return await Get<ProjectPermissionsList>($"projects/{projectId}/permissions");
+        }
+
+        public async Task UpdateProjectPermissions(string projectId, Permission perm)
+        {
+            await Put($"projects/{projectId}/permissions", perm);
+        }
+
+        public async Task<ProjectPermissionsList> GetProjectUserPermissions(string projectId, int userId)
+        {
+            return await Get<ProjectPermissionsList>($"projects/{projectId}/permissions/{userId}");
+        }
+
+        public async Task UpdateProjectUserPermissions(string projectId, int userId, Permission perm)
+        {
+            await Put($"projects/{projectId}/permissions/{userId}", perm);
+        }
+
+        public async Task<SessionPermissionsList> GetSessionPermissions(string sessionId)
+        {
+            return await Get<SessionPermissionsList>($"sessions/{sessionId}/permissions");
+        }
+
+        public async Task UpdateSessionPermissions(string sessionId, int userId, Permission perm)
+        {
+            await Put($"sessions/{sessionId}/permissions/{userId}", perm);
+        }
+
+        public async Task<SessionPermissionsList> GetSessionUserPermissions(string sessionId, int userId)
+        {
+            return await Get<SessionPermissionsList>($"sessions/{sessionId}/permissions/{userId}");
+        }
+
+        public async Task UpdateSessionUserPermissions(string sessionId, int userId, Permission perm)
+        {
+            await Put($"sessions/{sessionId}/permissions/{userId}", perm);
         }
         #endregion
     }

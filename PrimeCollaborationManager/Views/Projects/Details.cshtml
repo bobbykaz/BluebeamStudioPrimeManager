@@ -1,8 +1,26 @@
 ﻿@model Collaboration
 
 <div>
-    <h4>Project @Html.DisplayFor(model => model.Id) : @Html.DisplayFor(model => model.Name)</h4>
+    <h3>Project @Html.DisplayFor(model => model.Id) : @Html.DisplayFor(model => model.Name)</h3>
     <hr />
+    <div class="row">
+        
+        <div class="col">
+            <h4>
+                General
+            </h4>
+        </div>
+        <div class="col">
+            <h4>
+                @Html.ActionLink("Permissions", "PermissionDetails", new { collabId = Model.Id })
+            </h4>
+        </div>
+        <div class="col">
+            <h4>
+                @Html.ActionLink("Users", "UserDetails", new { collabId = Model.Id })
+            </h4>
+        </div>
+    </div>
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Restricted)
@@ -37,6 +55,5 @@
     </dl>
 </div>
 <div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Back to Projects</a>
 </div>
