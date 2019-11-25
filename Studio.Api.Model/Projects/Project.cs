@@ -18,4 +18,16 @@ namespace Studio.Api.Model
         public List<Project> Projects { get; set; }
         public int TotalCount { get; set; }
     }
+
+    public class CreateProjectRequest 
+    { 
+        public string Name { get; set; }
+        public bool Restricted { get; set; }
+        public bool Notification { get; set; }
+    }
+
+    public class CreateProjectResponse
+    {
+        public string Id { get; set; }
+    }
 }

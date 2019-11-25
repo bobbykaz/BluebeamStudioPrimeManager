@@ -31,6 +31,9 @@ namespace Studio.Api.Client
             _TokenEndpoint = config.TokenEndpoint;
             _StudioApiBase = config.StudioApiBaseUrl;
 
+            if (_StudioApiBase[_StudioApiBase.Length - 1] != '/')
+                _StudioApiBase = _StudioApiBase + '/';
+
             _Client = new HttpClient() { BaseAddress = new Uri(_StudioApiBase), Timeout = TimeSpan.FromSeconds(30) };
             _Client.DefaultRequestHeaders.Add("Accept","application/json");
         }
@@ -126,14 +129,27 @@ namespace Studio.Api.Client
         #endregion
 
         #region Projects
+        public async Task<string> CreateProject(string name, bool subToNotifications, bool restrictAccess)
+        {
+            CreateProjectRequest req = new CreateProjectRequest
+            {
+                Name = name,
+                Notification = subToNotifications,
+                Restricted = restrictAccess
+            };
+
+            var response = await Post<CreateProjectRequest, CreateProjectResponse>("projects", req);
+            return response.Id;
+        }
+
         public async Task<ProjectsList> GetProjectsList()
         {
-            return await Get<ProjectsList>($"{_StudioApiBase}/projects");
+            return await Get<ProjectsList>($"projects");
         }
 
         public async Task<Project> GetProjectDetails(string projectId)
         {
-            return await Get<Project>($"{_StudioApiBase}/projects/{projectId}");
+            return await Get<Project>($"projects/{projectId}");
         }
 
         public async Task<ProjectFolder> GetProjectFolderDetails(string projectId, int folderId)

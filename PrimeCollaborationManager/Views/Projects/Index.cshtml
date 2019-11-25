@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Studio.Api.Model.Project>
+﻿@model IEnumerable<Collaboration>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -16,10 +16,13 @@
                 @Html.DisplayNameFor(model => model.Restricted)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.OwnerEmail)
+                @Html.DisplayNameFor(model => model.Owner)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Created)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
             </th>
             <th></th>
         </tr>
@@ -37,13 +40,16 @@
                 @Html.DisplayFor(modelItem => item.Restricted)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.OwnerEmail)
+                @Html.DisplayFor(modelItem => item.Owner)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Created)
             </td>
             <td>
-                @Html.ActionLink("Details", "Details", new { projectId = item.Id }) 
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.ActionLink("Details", "Details", new { collabId = item.Id })
             </td>
         </tr>
 }

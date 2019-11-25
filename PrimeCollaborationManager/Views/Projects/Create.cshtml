@@ -1,10 +1,16 @@
-﻿@model Studio.Api.Model.Project
+﻿@model PrimeCollaborationManager.Models.CreateCollaboration
 
-<h4>Project</h4>
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>CreateCollaboration</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="CreateSubmit" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
@@ -13,23 +19,28 @@
             </div>
             <div class="form-group form-check">
                 <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Restricted" /> @Html.DisplayNameFor(model => model.Restricted)
+                    <input class="form-check-input" type="checkbox" id="Notification" name="Notification" value="true" /> Subscribe to Studio Notification Emails for this Project
                 </label>
             </div>
-            <div class="form-group">
-                <label asp-for="OwnerEmail" class="control-label"></label>
-                <input asp-for="OwnerEmail" class="form-control" />
-                <span asp-validation-for="OwnerEmail" class="text-danger"></span>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" type="checkbox" id="Restricted" name="Restricted" value="true" checked="checked"/>  Restrict Project Access to invitees only
+                </label>
             </div>
-            <div class="form-group">
-                <label asp-for="Created" class="control-label"></label>
-                <input asp-for="Created" class="form-control" />
-                <span asp-validation-for="Created" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="InviteUrl" class="control-label"></label>
-                <input asp-for="InviteUrl" class="form-control" />
-                <span asp-validation-for="InviteUrl" class="text-danger"></span>
+            <div>
+                <div class="form-group form-check">
+                    <label class="form-check-label">
+                        Select Default Project Permissions:
+                    </label>
+                </div>
+                @foreach (var perm in Model.InitialPermissionTypes)
+                {
+                    <div class="form-group form-check">
+                        <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" id="@perm" name="@perm" value="true" /> @perm
+                        </label>
+                    </div>
+                }
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />

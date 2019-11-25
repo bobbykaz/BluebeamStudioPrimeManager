@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using PrimeCollaborationManager.Models;
 using Studio.Api.Client;
 using Studio.Api.Model;
@@ -10,6 +11,7 @@ namespace PrimeCollaborationManager.Services
 {
     public class ProjectsCollabService : ICollaborationService
     {
+        static readonly string[] PermissionTypes = new string[] { "Invite", "ManageParticipants", "ManagePermissions", "UndoCheckouts", "CreateSessions", "ShareItems", "FullControl" };
         protected StudioClient _Client { get; set; }
         public ProjectsCollabService(StudioClient client)
         {
@@ -34,7 +36,7 @@ namespace PrimeCollaborationManager.Services
 
         public List<string> GetCollabPermissionTypes()
         {
-            throw new NotImplementedException();
+            return PermissionTypes.ToList();
         }
 
         public Task SetCollabPermissions(string id, string permission, bool? allow)
@@ -54,6 +56,49 @@ namespace PrimeCollaborationManager.Services
                 Restricted = project.Restricted,
                 Status = "Active"
             };
+        }
+
+        public async Task<string> CreateCollabAsync(IFormCollection form)
+        {
+            string name = "Default";
+            bool restricted = false;
+            bool notification = false;
+            PermissionsSettingsList pList = new PermissionsSettingsList()
+            {
+                Permissions = new List<PermissionSetting>()
+            };
+            foreach (var key in form.Keys)
+            {
+                var formValIsBool = bool.TryParse(form[key], out bool formVal);
+                switch (key)
+                {
+                    case "Name":
+                        name = form[key];
+                        break;
+                    case "Restricted":
+                        if (formValIsBool)
+                            restricted = formVal;
+                        else
+                            throw new ArgumentException($"form input for key {key} is not a bool!:Val:{form[key]}");
+                        break;
+                    case "Notification":
+                        if (formValIsBool)
+                            notification = formVal;
+                        else
+                            throw new ArgumentException($"form input for key {key} is not a bool!:Val:{form[key]}");
+                        break;
+                    default:
+                        if(formValIsBool)
+                            pList.Permissions.Add(new PermissionSetting { Type = key, Allow = formVal });
+                        break;
+                }
+            }
+
+            var projectId = await _Client.CreateProject(name, notification, restricted);
+
+            //permissions?
+
+            return projectId;
         }
     }
 }
