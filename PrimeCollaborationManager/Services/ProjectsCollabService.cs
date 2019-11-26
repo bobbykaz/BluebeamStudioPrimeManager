@@ -7,6 +7,7 @@ using PrimeCollaborationManager.Models;
 using Studio.Api.Client;
 using Studio.Api.Model;
 using Studio.Api.Model.Permissions;
+using Studio.Api.Model.Users;
 
 namespace PrimeCollaborationManager.Services
 {
@@ -19,28 +20,23 @@ namespace PrimeCollaborationManager.Services
             _Client = client;
         }
 
-        public Task<Collaboration> CreateCollabAsync(string id, string name, bool restrictUsers)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<Collaboration>> GetCollabListAsync()
+        public async Task<List<Collaboration>> GetListAsync()
         {
             var projects = await _Client.GetProjectsList();
             return projects.Projects.Select(p => ConvertToCollab(p)).ToList();
         }
 
-        public async Task<Collaboration> GetCollabDetailsAsync(string id)
+        public async Task<Collaboration> GetDetailsAsync(string id)
         {
             return ConvertToCollab(await _Client.GetProjectDetails(id));
         }
 
-        public List<string> GetCollabPermissionTypes()
+        public List<string> GetPermissionTypes()
         {
             return PermissionTypes.ToList();
         }
 
-        public Task SetCollabPermissions(string id, string permission, bool? allow)
+        public Task SetPermissionsAsync(string id, string permission, bool? allow)
         {
             throw new NotImplementedException();
         }
@@ -59,7 +55,7 @@ namespace PrimeCollaborationManager.Services
             };
         }
 
-        public async Task<string> CreateCollabAsync(IFormCollection form)
+        public async Task<string> CreateAsync(IFormCollection form)
         {
             string name = "Default";
             bool restricted = false;
@@ -95,7 +91,7 @@ namespace PrimeCollaborationManager.Services
             var projectId = await _Client.CreateProject(name, notification, restricted);
 
             var chosenPermTypes = pList.Select(s => s.Type).ToList();
-            var missingTypes = GetCollabPermissionTypes();
+            var missingTypes = GetPermissionTypes();
             missingTypes.RemoveAll(s => chosenPermTypes.Contains(s));
             foreach (var missingPerm in missingTypes)
             { 
@@ -110,10 +106,16 @@ namespace PrimeCollaborationManager.Services
             return projectId;
         }
 
-        public async Task<List<Permission>> GetCollabPermissions(string id)
+        public async Task<List<Permission>> GetPermissionsAsync(string id)
         {
             var perms = await _Client.GetProjectPermissions(id);
             return perms.ProjectPermissions;
+        }
+
+        public async Task<List<User>> GetUsersAsync(string id)
+        {
+            var response = await _Client.GetProjectUsers(id);
+            return response.ProjectUsers;
         }
     }
 }

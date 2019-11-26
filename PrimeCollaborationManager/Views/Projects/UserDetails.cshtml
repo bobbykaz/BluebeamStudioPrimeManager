@@ -1,0 +1,62 @@
+﻿@model CollaborationDetails
+
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<partial name="CollabNavbar" model="@Model.Collab" />
+<table class="table">
+    <thead class="thead-dark">
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Email
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Access
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Users)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            @{
+                if (item.RestrictedStatus == "Allow")
+                {
+                    <td class="bg-success">
+                        @Html.DisplayFor(modelItem => item.RestrictedStatus)
+                    </td>
+                }
+                else if (item.RestrictedStatus == "Deny")
+                {
+                    <td class="bg-danger">
+                        @Html.DisplayFor(modelItem => item.RestrictedStatus)
+                    </td>
+                }
+                else
+                {
+                    <td></td>
+                }
+            }
+            <td></td>
+        </tr>
+        }
+    </tbody>
+</table>
+<div>    <a asp-action="Index">Back to Projects</a></div>

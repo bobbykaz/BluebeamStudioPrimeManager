@@ -1,0 +1,23 @@
+﻿@model Collaboration
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="navbar-brand">Project @Html.DisplayFor(model => model.Id) : @Html.DisplayFor(model => model.Name)</div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                @{
+                    var detailParam = new Dictionary<string, string> { { "collabId", Model.Id } };
+                }
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="Details" asp-all-route-data="detailParam">General </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="PermissionDetails" asp-all-route-data="detailParam">Permissions </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" asp-action="UserDetails" asp-all-route-data="detailParam">Users </a>
+                </li>
+            </ul>
+        </div>
+    </nav>

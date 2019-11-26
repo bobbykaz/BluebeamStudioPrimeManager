@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace PrimeCollaborationManager.Models
+namespace Studio.Api.Model.Users
 {
     public class User
     {
@@ -11,5 +10,15 @@ namespace PrimeCollaborationManager.Models
         public string Name { get; set; }
         public string RestrictedStatus { get; set; }
         public int Id { get; set; }
+    }
+
+    public class ProjectUsersList
+    { 
+        public List<User> ProjectUsers { get; set; }
+    }
+
+    public class SessionUsersList
+    {
+        public List<User> SessionUsers { get; set; }
     }
 }

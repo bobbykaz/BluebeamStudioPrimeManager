@@ -32,23 +32,33 @@ namespace PrimeCollaborationManager.Controllers
         public async Task<IActionResult> Index()
         {
             await InitClient();
-            var projects = await _ProjectsService.GetCollabListAsync();
+            var projects = await _ProjectsService.GetListAsync();
             return View(projects);
         }
 
         public async Task<IActionResult> Details(string collabId)
         {
             await InitClient();
-            var detail = await _ProjectsService.GetCollabDetailsAsync(collabId);
-            return View(detail);
+            var project = await _ProjectsService.GetDetailsAsync(collabId);
+            var model = new CollaborationDetails { Collab = project };
+            return View(model);
         }
 
         public async Task<IActionResult> PermissionDetails(string collabId)
         {
             await InitClient();
-            var detail = await _ProjectsService.GetCollabDetailsAsync(collabId);
-            var perms = await _ProjectsService.GetCollabPermissions(collabId);
+            var detail = await _ProjectsService.GetDetailsAsync(collabId);
+            var perms = await _ProjectsService.GetPermissionsAsync(collabId);
             var model = new CollaborationDetails { Collab = detail, Permissions = perms };
+            return View(model);
+        }
+
+        public async Task<IActionResult> UserDetails(string collabId)
+        {
+            await InitClient();
+            var detail = await _ProjectsService.GetDetailsAsync(collabId);
+            var users = await _ProjectsService.GetUsersAsync(collabId);
+            var model = new CollaborationDetails { Collab = detail, Users = users };
             return View(model);
         }
 
@@ -59,7 +69,7 @@ namespace PrimeCollaborationManager.Controllers
             var model = new CreateCollaboration()
             {
                 Restricted = true,
-                InitialPermissionTypes = _ProjectsService.GetCollabPermissionTypes()
+                InitialPermissionTypes = _ProjectsService.GetPermissionTypes()
             };
             return View(model);
         }
@@ -68,7 +78,7 @@ namespace PrimeCollaborationManager.Controllers
         public async Task<IActionResult> CreateSubmit(IFormCollection form)
         {
             await InitClient();
-            var id = await _ProjectsService.CreateCollabAsync(form);
+            var id = await _ProjectsService.CreateAsync(form);
             return RedirectToAction("Details", new { collabId = id });
         }
     }

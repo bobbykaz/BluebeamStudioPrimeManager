@@ -1,56 +1,38 @@
-﻿@model Collaboration
+﻿@model CollaborationDetails
 
 <div>
-    <h3>Project @Html.DisplayFor(model => model.Id) : @Html.DisplayFor(model => model.Name)</h3>
-    <hr />
-    <div class="row">
-        
-        <div class="col">
-            <h4>
-                General
-            </h4>
-        </div>
-        <div class="col">
-            <h4>
-                @Html.ActionLink("Permissions", "PermissionDetails", new { collabId = Model.Id })
-            </h4>
-        </div>
-        <div class="col">
-            <h4>
-                @Html.ActionLink("Users", "UserDetails", new { collabId = Model.Id })
-            </h4>
-        </div>
-    </div>
+    <partial name="CollabNavbar" model="@Model.Collab" />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Restricted)
+            @Html.DisplayNameFor(model => model.Collab.Restricted)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Restricted)
+            @Html.DisplayFor(model => model.Collab.Restricted)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Owner)
+            @Html.DisplayNameFor(model => model.Collab.Owner)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Owner)
+            @Html.DisplayFor(model => model.Collab.Owner)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Created)
+            @Html.DisplayNameFor(model => model.Collab.Created)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Created)
+            @Html.DisplayFor(model => model.Collab.Created)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
+            @Html.DisplayNameFor(model => model.Collab.Status)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Status)
+            @Html.DisplayFor(model => model.Collab.Status)
         </dd>
         <dt class="col-sm-2">
             Open in Revu:
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.InviteUrl)
+            <a href="@Model.Collab.InviteUrl">@Model.Collab.InviteUrl</a>
+            
         </dd>
     </dl>
 </div>

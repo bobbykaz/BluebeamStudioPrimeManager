@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Studio.Api.Model;
 using Studio.Api.Model.Permissions;
+using Studio.Api.Model.Users;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -251,6 +252,18 @@ namespace Studio.Api.Client
         public async Task UpdateSessionUserPermissions(string sessionId, int userId, Permission perm)
         {
             await Put($"sessions/{sessionId}/permissions/{userId}", perm);
+        }
+        #endregion
+
+        #region Users
+        public async Task<ProjectUsersList> GetProjectUsers(string projectId)
+        {
+            return await Get<ProjectUsersList>($"projects/{projectId}/users");
+        }
+
+        public async Task<SessionUsersList> GetSessionUsers(string sessionId)
+        {
+            return await Get<SessionUsersList>($"sessions/{sessionId}/users");
         }
         #endregion
     }

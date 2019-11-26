@@ -4,25 +4,7 @@
     ViewData["Title"] = "PermissionDetails";
 }
 
-<h3>Project @Html.DisplayFor(model => model.Collab.Id) : @Html.DisplayFor(model => model.Collab.Name)</h3>
-<hr />
-<div class="row">
-    <div class="col">
-        <h4>
-            @Html.ActionLink("General", "Details", new { collabId = Model.Collab.Id })
-        </h4>
-    </div>
-    <div class="col">
-        <h4>
-            Permissions
-        </h4>
-    </div>
-    <div class="col">
-        <h4>
-            @Html.ActionLink("Users", "UserDetails", new { collabId = Model.Collab.Id })
-        </h4>
-    </div>
-</div>
+<partial name="CollabNavbar" model="@Model.Collab" />
 <table class="table">
     <thead class="thead-dark">
         <tr>
