@@ -6,7 +6,7 @@ namespace PrimeCollaborationManager.Services
 {
     public interface ICollaborationService
     {
-        Task<List<Models.Collaboration>> GetListAsync();
+        Task<Models.CollaborationList> GetListAsync(int page = 1);
         Task<Models.Collaboration> GetDetailsAsync(string id);
         Task<List<Studio.Api.Model.Permissions.Permission>> GetPermissionsAsync(string id);
         Task<List<Studio.Api.Model.Users.User>> GetUsersAsync(string id);

@@ -1,7 +1,10 @@
-﻿@model IEnumerable<Collaboration>
+﻿@model CollaborationList
 
 <h3> Projects </h3>
+@if (Model.ShowCreate)
+{
 <p>
     <a asp-action="Create">Create New Project</a>
 </p>
+}
 <partial name="CollabTable" model="@Model" />

@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using Studio.Api.Model;
+﻿using Studio.Api.Model;
 using Studio.Api.Model.Permissions;
 using Studio.Api.Model.Users;
 using System;
@@ -7,6 +6,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Studio.Api.Client
@@ -61,7 +62,7 @@ namespace Studio.Api.Client
             var response = await _Client.SendAsync(request);
             response.EnsureSuccessStatusCode();
 
-            var token = JsonConvert.DeserializeObject<StudioOAuthToken>(await response.Content.ReadAsStringAsync());
+            var token = JsonSerializer.Deserialize<StudioOAuthToken>(await response.Content.ReadAsStringAsync());
             return token;
         }
         #endregion
@@ -72,25 +73,26 @@ namespace Studio.Api.Client
             var response = await _Client.GetAsync(route);
             response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
-            var responseObj = JsonConvert.DeserializeObject<T>(content);
+
+            var responseObj = JsonSerializer.Deserialize<T>(content);
 
             return responseObj;
         }
 
         protected async Task Put<TRequest>(string route, TRequest request)
         {
-            var content = new StringContent(JsonConvert.SerializeObject(request), System.Text.Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonSerializer.Serialize(request), System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PutAsync(route, content);
             response.EnsureSuccessStatusCode();
         }
 
         protected async Task<TResponse> Put<TRequest, TResponse>(string route, TRequest request)
         {
-            var content = new StringContent(JsonConvert.SerializeObject(request), System.Text.Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonSerializer.Serialize(request), System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PutAsync(route, content);
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
-            var responseObj = JsonConvert.DeserializeObject<TResponse>(responseContent);
+            var responseObj = JsonSerializer.Deserialize<TResponse>(responseContent);
 
             return responseObj;
         }
@@ -103,18 +105,18 @@ namespace Studio.Api.Client
 
         protected async Task Post<TRequest>(string route, TRequest request)
         {
-            var content = new StringContent(JsonConvert.SerializeObject(request), System.Text.Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonSerializer.Serialize(request), System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PostAsync(route, content);
             response.EnsureSuccessStatusCode();
         }
 
         protected async Task<TResponse> Post<TRequest,TResponse>(string route, TRequest request)
         {
-            var content = new StringContent(JsonConvert.SerializeObject(request), System.Text.Encoding.UTF8, "application/json");
+            var content = new StringContent(JsonSerializer.Serialize(request), System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PostAsync(route, content);
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
-            var responseObj = JsonConvert.DeserializeObject<TResponse>(responseContent);
+            var responseObj = JsonSerializer.Deserialize<TResponse>(responseContent);
 
             return responseObj;
         }
@@ -162,9 +164,9 @@ namespace Studio.Api.Client
             return response.Id;
         }
 
-        public async Task<ProjectsList> GetProjectsList()
+        public async Task<ProjectsList> GetProjectsList(int limit = 100, int offset = 0)
         {
-            return await Get<ProjectsList>($"projects");
+            return await Get<ProjectsList>($"projects?limit={limit}&offset={offset}");
         }
 
         public async Task<Project> GetProjectDetails(string projectId)

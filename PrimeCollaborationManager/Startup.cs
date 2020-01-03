@@ -4,9 +4,11 @@ using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using PrimeCollaborationManager.Data;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -27,6 +29,12 @@ namespace PrimeCollaborationManager
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var connection = Configuration["DB:ConnectionString"];
+
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlite(connection)
+            );
+
             services.AddMvc();
 
             var apiConfig = new Studio.Api.Client.StudioApplicationConfig()
@@ -61,8 +69,9 @@ namespace PrimeCollaborationManager
                 options.SaveTokens = true;
 
                 options.ClaimActions.MapJsonKey(ClaimTypes.Email, "Email");
-                options.ClaimActions.MapJsonKey(ClaimTypes.Name, "DisplayName");
+                options.ClaimActions.MapJsonKey(ClaimTypes.Name, "Email");
                 options.ClaimActions.MapJsonKey(ClaimTypes.NameIdentifier, "UserId");
+                options.ClaimActions.MapJsonKey("urn:bluebeam:displayname", "DisplayName");
                 options.ClaimActions.MapJsonKey("urn:bluebeam:primerole", "PrimeMemberRole");
 
                 options.Events = new OAuthEvents

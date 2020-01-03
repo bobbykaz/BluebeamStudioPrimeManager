@@ -29,10 +29,10 @@ namespace PrimeCollaborationManager.Controllers
             _ProjectsService = new ProjectsCollabService(_Client);
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
             await InitClient();
-            var projects = await _ProjectsService.GetListAsync();
+            var projects = await _ProjectsService.GetListAsync(page);
             return View(projects);
         }
 

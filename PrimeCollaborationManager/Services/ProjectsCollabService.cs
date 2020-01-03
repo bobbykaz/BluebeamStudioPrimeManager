@@ -14,16 +14,28 @@ namespace PrimeCollaborationManager.Services
     public class ProjectsCollabService : ICollaborationService
     {
         static readonly string[] PermissionTypes = new string[] { "Invite", "ManageParticipants", "ManagePermissions", "UndoCheckouts", "CreateSessions", "ShareItems", "FullControl" };
+        const int PageSize = 5;
+
         protected StudioClient _Client { get; set; }
         public ProjectsCollabService(StudioClient client)
         {
             _Client = client;
         }
 
-        public async Task<List<Collaboration>> GetListAsync()
+        public async Task<CollaborationList> GetListAsync(int page = 1)
         {
-            var projects = await _Client.GetProjectsList();
-            return projects.Projects.Select(p => ConvertToCollab(p)).ToList();
+            var projects = await _Client.GetProjectsList(PageSize, PageSize * (page - 1));
+            var result = new CollaborationList()
+            {
+                TotalCollabs = projects.TotalCount,
+                Collaborations = projects.Projects.Select(p => ConvertToCollab(p)).ToList(),
+                CurrentPage = page,
+                ItemsPerPage = PageSize,
+                ShowStatus = false,
+                ShowTimes = false
+            };
+
+            return result;
         }
 
         public async Task<Collaboration> GetDetailsAsync(string id)

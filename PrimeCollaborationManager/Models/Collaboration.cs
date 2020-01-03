@@ -2,11 +2,20 @@
 using Studio.Api.Model.Users;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PrimeCollaborationManager.Models
 {
+    public class CollaborationList 
+    { 
+        public List<Collaboration> Collaborations { get; set; }
+        public int TotalCollabs { get; set; }
+        public int CurrentPage { get; set; }
+        public int ItemsPerPage { get; set; }
+        public bool ShowCreate { get; set; }
+        public bool ShowTimes { get; set; }
+        public bool ShowStatus { get; set; }
+    }
+
     public class Collaboration
     {
         public string Id { get; set; }
