@@ -53,11 +53,11 @@ namespace PrimeCollaborationManager.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> UserDetails(string collabId)
+        public async Task<IActionResult> UserList(string collabId, int page = 1)
         {
             await InitClient();
             var detail = await _ProjectsService.GetDetailsAsync(collabId);
-            var users = await _ProjectsService.GetUsersAsync(collabId);
+            var users = await _ProjectsService.GetUsersAsync(collabId, page);
             var model = new CollaborationDetails { Collab = detail, Users = users };
             return View(model);
         }

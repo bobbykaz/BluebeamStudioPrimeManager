@@ -15,10 +15,12 @@ namespace Studio.Api.Model.Users
     public class ProjectUsersList
     { 
         public List<User> ProjectUsers { get; set; }
+        public int TotalCount { get; set; }
     }
 
     public class SessionUsersList
     {
         public List<User> SessionUsers { get; set; }
+        public int TotalCount { get; set; }
     }
 }

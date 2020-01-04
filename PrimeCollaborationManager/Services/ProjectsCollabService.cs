@@ -27,12 +27,16 @@ namespace PrimeCollaborationManager.Services
             var projects = await _Client.GetProjectsList(PageSize, PageSize * (page - 1));
             var result = new CollaborationList()
             {
-                TotalCollabs = projects.TotalCount,
-                Collaborations = projects.Projects.Select(p => ConvertToCollab(p)).ToList(),
-                CurrentPage = page,
-                ItemsPerPage = PageSize,
+                Collaborations = new PagedResult<Collaboration>()
+                { 
+                    Items = projects.Projects.Select(p => ConvertToCollab(p)).ToList(),
+                    TotalItems = projects.TotalCount,
+                    CurrentPage = page,
+                    ItemsPerPage = PageSize,
+                },
                 ShowStatus = false,
-                ShowTimes = false
+                ShowTimes = false, 
+                ShowCreate = false
             };
 
             return result;
@@ -124,10 +128,16 @@ namespace PrimeCollaborationManager.Services
             return perms.ProjectPermissions;
         }
 
-        public async Task<List<User>> GetUsersAsync(string id)
+        public async Task<PagedResult<User>> GetUsersAsync(string id, int page = 1)
         {
-            var response = await _Client.GetProjectUsers(id);
-            return response.ProjectUsers;
+            var response = await _Client.GetProjectUsers(id, PageSize, PageSize * (page - 1));
+            return new PagedResult<User>()
+            {
+                Items = response.ProjectUsers,
+                TotalItems = response.TotalCount,
+                CurrentPage = page,
+                ItemsPerPage = PageSize
+            };
         }
     }
 }

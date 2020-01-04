@@ -1,0 +1,33 @@
+﻿@model PagedResultDisplay
+@if (Model.TotalItems > Model.ItemsPerPage)
+{
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="navbar-brand">Page</div>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                @{
+                    Model.ActionParams["page"] = "1";
+                }
+                @for (int p = 1; p * Model.ItemsPerPage < Model.TotalItems + Model.ItemsPerPage; p++)
+                {
+                    Model.ActionParams["page"] = p.ToString();
+                    if (p == Model.CurrentPage)
+                    {
+                        <li class="nav-item active">
+                            <a class="nav-link" asp-action="@Model.ControllerAction" asp-all-route-data="@Model.ActionParams">@p </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-action="@Model.ControllerAction" asp-all-route-data="@Model.ActionParams">@p </a>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    </nav>
+}

@@ -7,7 +7,6 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Studio.Api.Client
@@ -258,14 +257,14 @@ namespace Studio.Api.Client
         #endregion
 
         #region Users
-        public async Task<ProjectUsersList> GetProjectUsers(string projectId)
+        public async Task<ProjectUsersList> GetProjectUsers(string projectId, int limit = 100, int offset = 0)
         {
-            return await Get<ProjectUsersList>($"projects/{projectId}/users");
+            return await Get<ProjectUsersList>($"projects/{projectId}/users?limit={limit}&offset={offset}");
         }
 
-        public async Task<SessionUsersList> GetSessionUsers(string sessionId)
+        public async Task<SessionUsersList> GetSessionUsers(string sessionId, int limit = 100, int offset = 0)
         {
-            return await Get<SessionUsersList>($"sessions/{sessionId}/users");
+            return await Get<SessionUsersList>($"sessions/{sessionId}/users?limit={limit}&offset={offset}");
         }
         #endregion
     }

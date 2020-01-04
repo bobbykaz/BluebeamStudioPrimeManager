@@ -35,9 +35,9 @@
     </thead>
     <tbody>
         @{
-            int collabNum = 1 + (Model.CurrentPage - 1) * Model.ItemsPerPage;
+            int collabNum = 1 + (Model.Collaborations.CurrentPage - 1) * Model.Collaborations.ItemsPerPage;
         }
-        @foreach (var item in Model.Collaborations)
+        @foreach (var item in Model.Collaborations.Items)
         {
             <tr>
                 <td>
@@ -75,36 +75,4 @@
         }
     </tbody>
 </table>
-@if (Model.TotalCollabs > Model.ItemsPerPage)
-{
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="navbar-brand">Page</div>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                @{
-                    var detailParam = new Dictionary<string, string> { { "page", "1" } };
-                }
-                @for (int p = 1; p * Model.ItemsPerPage < Model.TotalCollabs + Model.ItemsPerPage; p++)
-                {
-                    detailParam["page"] = p.ToString();
-                    if (p == Model.CurrentPage)
-                    {
-                        <li class="nav-item active">
-                            <a class="nav-link" asp-action="Index" asp-all-route-data="detailParam">@p </a>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link" asp-action="Index" asp-all-route-data="detailParam">@p </a>
-                        </li>
-                    }
-                }
-            </ul>
-        </div>
-    </nav>
-}
 
