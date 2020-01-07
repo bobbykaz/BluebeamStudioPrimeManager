@@ -61,6 +61,7 @@ namespace PrimeCollaborationManager.Services
         {
             return new Collaboration()
             {
+                Type = "Project",
                 Id = project.Id,
                 Name = project.Name,
                 Created = project.Created,

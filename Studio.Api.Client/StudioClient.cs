@@ -1,5 +1,6 @@
 ﻿using Studio.Api.Model;
 using Studio.Api.Model.Permissions;
+using Studio.Api.Model.Sessions;
 using Studio.Api.Model.Users;
 using System;
 using System.Collections.Generic;
@@ -149,6 +150,31 @@ namespace Studio.Api.Client
         }
         #endregion
 
+        #region Sessions
+        public async Task<string> CreateSession(string name, bool subToNotifications, bool restrictAccess)
+        {
+            CreateSessionRequest req = new CreateSessionRequest
+            {
+                Name = name,
+                Notification = subToNotifications,
+                Restricted = restrictAccess
+            };
+
+            var response = await Post<CreateSessionRequest, CreateSessionResponse>("sessions", req);
+            return response.Id;
+        }
+
+        public async Task<SessionsList> GetSessionsList(int limit = 100, int offset = 0)
+        {
+            return await Get<SessionsList>($"sessions?limit={limit}&offset={offset}&?includeDeleted=true");
+        }
+
+        public async Task<Session> GetSessionDetails(string id)
+        {
+            return await Get<Session>($"sessions/{id}");
+        }
+        #endregion
+
         #region Projects
         public async Task<string> CreateProject(string name, bool subToNotifications, bool restrictAccess)
         {
@@ -240,9 +266,9 @@ namespace Studio.Api.Client
             return await Get<SessionPermissionsList>($"sessions/{sessionId}/permissions");
         }
 
-        public async Task UpdateSessionPermissions(string sessionId, int userId, Permission perm)
+        public async Task UpdateSessionPermissions(string sessionId, Permission perm)
         {
-            await Put($"sessions/{sessionId}/permissions/{userId}", perm);
+            await Put($"sessions/{sessionId}/permissions", perm);
         }
 
         public async Task<SessionPermissionsList> GetSessionUserPermissions(string sessionId, int userId)

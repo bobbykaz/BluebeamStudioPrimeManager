@@ -15,6 +15,7 @@ namespace PrimeCollaborationManager.Models
 
     public class Collaboration
     {
+        public string Type { get; set; }
         public string Id { get; set; }
         public string Name { get; set; }
         public bool Restricted { get; set; }
@@ -22,6 +23,7 @@ namespace PrimeCollaborationManager.Models
         public DateTime Created { get; set; }
         public string InviteUrl { get; set; }
         public string Status { get; set; }
+        public DateTime? EndDate { get; set; }
     }
 
     public class CollaborationDetails

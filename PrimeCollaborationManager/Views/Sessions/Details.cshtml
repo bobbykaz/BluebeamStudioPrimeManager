@@ -1,0 +1,47 @@
+﻿@model CollaborationDetails
+
+<div>
+    <partial name="CollabNavbar" model="@Model.Collab" />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Collab.Restricted)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Collab.Restricted)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Collab.Owner)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Collab.Owner)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Collab.Created)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Collab.Created)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Collab.EndDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Collab.EndDate)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Collab.Status)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Collab.Status)
+        </dd>
+        <dt class="col-sm-2">
+            Open in Revu:
+        </dt>
+        <dd class="col-sm-10">
+            <a href="@Model.Collab.InviteUrl">@Model.Collab.InviteUrl</a>
+
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Index">Back to Sessions</a>
+</div>
