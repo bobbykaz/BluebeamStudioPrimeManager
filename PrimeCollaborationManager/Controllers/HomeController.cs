@@ -7,21 +7,24 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PrimeCollaborationManager.Models;
+using Studio.Api.Client;
 
 namespace PrimeCollaborationManager.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly StudioApplicationConfig _Config;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, StudioApplicationConfig config)
         {
             _logger = logger;
+            _Config = config;
         }
 
         public IActionResult Index()
         {
-            return View();
+            return View("Index",_Config.ClientId);
         }
 
         public IActionResult Privacy()

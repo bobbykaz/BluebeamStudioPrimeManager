@@ -31,5 +31,6 @@ namespace PrimeCollaborationManager.Models
         public Collaboration Collab { get; set; }
         public List<Permission> Permissions { get; set; }
         public PagedResult<User> Users { get; set; }
+        public bool ShowStatus { get; set; }
     }
 }

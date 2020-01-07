@@ -57,6 +57,11 @@ namespace PrimeCollaborationManager.Services
             throw new NotImplementedException();
         }
 
+        public async Task UpdateCollaborationAccessAsync(string id, bool restrictAccess)
+        {
+            await _Client.UpdateProjectAsync(id, null, restrictAccess, null, null);
+        }
+
         public Collaboration ConvertToCollab(Project project)
         {
             return new Collaboration()

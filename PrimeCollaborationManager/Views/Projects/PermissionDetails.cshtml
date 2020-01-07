@@ -4,31 +4,4 @@
     ViewData["Title"] = "PermissionDetails";
 }
 
-<partial name="CollabNavbar" model="@Model.Collab" />
-<table class="table">
-    <thead class="thead-dark">
-        <tr>
-            <th>
-                Permission Type
-            </th>
-            <th>
-                Setting
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Permissions)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Type)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Allow)
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-<div>    <a asp-action="Index">Back to Projects</a></div>
+<partial name="CollabPermissionList" model="@Model" />

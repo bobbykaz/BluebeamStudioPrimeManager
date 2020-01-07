@@ -44,6 +44,16 @@ namespace PrimeCollaborationManager.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateAccess(string collabId, bool newRestrictedStatus)
+        {
+            await InitClient();
+            var project = await _ProjectsService.GetDetailsAsync(collabId);
+            await _ProjectsService.UpdateCollaborationAccessAsync(collabId, !project.Restricted);
+
+            return RedirectToAction("Details", new Dictionary<string, string> { { "collabId", collabId } });
+        }
+
         public async Task<IActionResult> PermissionDetails(string collabId)
         {
             await InitClient();

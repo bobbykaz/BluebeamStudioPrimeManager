@@ -34,6 +34,12 @@
         </nav>
     </header>
     <div class="container">
+        @if (ViewData.ModelState.ErrorCount > 0) // error logic here 
+        { 
+        <div class="alert alert-danger" role="alert">
+            Errors present in modelstate
+        </div>
+        }
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

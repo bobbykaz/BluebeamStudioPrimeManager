@@ -10,6 +10,7 @@ namespace PrimeCollaborationManager.Services
         Task<Models.Collaboration> GetDetailsAsync(string id);
         Task<List<Studio.Api.Model.Permissions.Permission>> GetPermissionsAsync(string id);
         Task<Models.PagedResult<Studio.Api.Model.Users.User>> GetUsersAsync(string id, int page = 1);
+        Task UpdateCollaborationAccessAsync(string id, bool restrictAccess);
         Task SetPermissionsAsync(string id, string permission, bool? allow);
         List<string> GetPermissionTypes();
         Task<string> CreateAsync(IFormCollection form);

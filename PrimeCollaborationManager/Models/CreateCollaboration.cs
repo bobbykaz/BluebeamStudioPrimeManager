@@ -9,6 +9,7 @@ namespace PrimeCollaborationManager.Models
     public class CreateCollaboration
     {
         [Required]
+        [MinLength(1)]
         public string Name { get; set; }
         public bool Notification { get; set; }
         public bool Restricted { get; set; }

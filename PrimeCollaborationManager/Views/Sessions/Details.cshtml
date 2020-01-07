@@ -1,7 +1,7 @@
 ﻿@model CollaborationDetails
 
 <div>
-    <partial name="CollabNavbar" model="@Model.Collab" />
+    <partial name="CollabNavbar" model="@Model" />
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Collab.Restricted)
@@ -19,13 +19,13 @@
             @Html.DisplayNameFor(model => model.Collab.Created)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Collab.Created)
+            @Html.DisplayFor(model => model.Collab.Created) 
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Collab.EndDate)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Collab.EndDate)
+            @Model.Collab.EndDate.HasValue ? Html.DisplayFor(model => model.Collab.EndDate) : "No End Date set"
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Collab.Status)

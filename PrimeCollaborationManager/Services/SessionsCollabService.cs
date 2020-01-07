@@ -141,5 +141,10 @@ namespace PrimeCollaborationManager.Services
                 ItemsPerPage = PageSize
             };
         }
+
+        public Task UpdateCollaborationAccessAsync(string id, bool restrictAccess)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

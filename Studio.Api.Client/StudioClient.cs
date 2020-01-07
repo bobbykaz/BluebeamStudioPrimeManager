@@ -189,6 +189,21 @@ namespace Studio.Api.Client
             return response.Id;
         }
 
+        public async Task<Project> UpdateProjectAsync(string id, string newName, bool? access, bool? notifications, string newOwnerEmail)
+        {
+            var req = new UpdateProjectRequest
+            { 
+                Name = newName,
+                Restricted = access,
+                Notification = notifications,
+                OwnerEmailOrId = newOwnerEmail
+            };
+
+            var response = await Put<UpdateProjectRequest, Project>($"projects/{id}", req);
+
+            return response;
+        }
+
         public async Task<ProjectsList> GetProjectsList(int limit = 100, int offset = 0)
         {
             return await Get<ProjectsList>($"projects?limit={limit}&offset={offset}");

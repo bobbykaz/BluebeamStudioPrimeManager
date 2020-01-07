@@ -30,4 +30,12 @@ namespace Studio.Api.Model
     {
         public string Id { get; set; }
     }
+
+    public class UpdateProjectRequest 
+    {
+        public string Name { get; set; }
+        public bool? Restricted { get; set; }
+        public bool? Notification { get; set; }
+        public string OwnerEmailOrId { get; set; }
+    }
 }

@@ -1,21 +1,34 @@
-﻿@model Collaboration
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="navbar-brand">@Html.DisplayFor(model => model.Type) @Html.DisplayFor(model => model.Id) : @Html.DisplayFor(model => model.Name)</div>
+﻿@model CollaborationDetails
+    <nav class="navbar navbar-dark navbar-expand-lg bg-dark">
+        <div class="navbar-brand">@Html.DisplayFor(model => model.Collab.Type) @Html.DisplayFor(model => model.Collab.Id) : @Html.DisplayFor(model => model.Collab.Name)</div>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav">
                 @{
-                    var detailParam = new Dictionary<string, string> { { "collabId", Model.Id } };
+                    var detailParam = new Dictionary<string, string> { { "collabId", Model.Collab.Id } };
+                    var generalClass = "nav-item active";
+                    var permClass = "nav-item";
+                    var userClass = "nav-item";
+                    if (Model.Permissions != null)
+                    { 
+                        generalClass = "nav-item";
+                        permClass = "nav-item active";
+                    }
+                    if (Model.Users != null)
+                    { 
+                        generalClass = "nav-item";
+                        userClass = "nav-item active";
+                    }
                 }
-                <li class="nav-item">
+                <li class="@generalClass">
                     <a class="nav-link" asp-action="Details" asp-all-route-data="detailParam">General </a>
                 </li>
-                <li class="nav-item">
+                <li class="@permClass">
                     <a class="nav-link" asp-action="PermissionDetails" asp-all-route-data="detailParam">Permissions </a>
                 </li>
-                <li class="nav-item">
+                <li class="@userClass">
                     <a class="nav-link" asp-action="UserList" asp-all-route-data="detailParam">Users </a>
                 </li>
             </ul>
