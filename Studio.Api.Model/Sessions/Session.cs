@@ -32,4 +32,14 @@ namespace Studio.Api.Model.Sessions
     {
         public string Id { get; set; }
     }
+
+    public class UpdateSessionRequest
+    {
+        public string Name { get; set; }
+        public bool? Restricted { get; set; }
+        public bool? Notification { get; set; }
+        public string OwnerEmailOrId { get; set; }
+        public string Status { get; set; }
+        public DateTime? SessionEndDate { get; set; }
+    }
 }

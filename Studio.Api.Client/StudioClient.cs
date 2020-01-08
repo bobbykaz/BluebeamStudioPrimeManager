@@ -164,6 +164,23 @@ namespace Studio.Api.Client
             return response.Id;
         }
 
+        public async Task<Session> UpdateSessionAsync(string id, string newName, bool? access, bool? notifications, string newOwnerEmail, string newStatus, DateTime? newEndDate)
+        {
+            var req = new UpdateSessionRequest
+            {
+                Name = newName,
+                Restricted = access,
+                Notification = notifications,
+                OwnerEmailOrId = newOwnerEmail,
+                SessionEndDate = newEndDate,
+                Status = newStatus
+            };
+
+            var response = await Put<UpdateSessionRequest, Session>($"sessions/{id}", req);
+
+            return response;
+        }
+
         public async Task<SessionsList> GetSessionsList(int limit = 100, int offset = 0)
         {
             return await Get<SessionsList>($"sessions?limit={limit}&offset={offset}&?includeDeleted=true");
@@ -303,9 +320,21 @@ namespace Studio.Api.Client
             return await Get<ProjectUsersList>($"projects/{projectId}/users?limit={limit}&offset={offset}");
         }
 
+        public async Task UpdateProjectUserRestrictedStatus(string projectId, int userId, string restrictedStatus)
+        {
+            var req = new UpdateUserRestrictedStatusRequest() { RestrictedStatus = restrictedStatus };
+            await Put($"projects/{projectId}/users/{userId}", req);
+        }
+
         public async Task<SessionUsersList> GetSessionUsers(string sessionId, int limit = 100, int offset = 0)
         {
             return await Get<SessionUsersList>($"sessions/{sessionId}/users?limit={limit}&offset={offset}");
+        }
+
+        public async Task UpdateSessionUserRestrictedStatus(string sessionId, int userId, string restrictedStatus)
+        {
+            var req = new UpdateUserRestrictedStatusRequest() { RestrictedStatus = restrictedStatus };
+            await Put($"sessions/{sessionId}/users/{userId}", req);
         }
         #endregion
     }

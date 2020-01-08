@@ -145,5 +145,10 @@ namespace PrimeCollaborationManager.Services
                 ItemsPerPage = PageSize
             };
         }
+
+        public async Task UpdateUserRestrictedStatusAsync(string id, int userId, string restrictedStatus)
+        {
+            await _Client.UpdateProjectUserRestrictedStatus(id, userId, restrictedStatus);
+        }
     }
 }

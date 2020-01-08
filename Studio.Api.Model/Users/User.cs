@@ -23,4 +23,9 @@ namespace Studio.Api.Model.Users
         public List<User> SessionUsers { get; set; }
         public int TotalCount { get; set; }
     }
+
+    public class UpdateUserRestrictedStatusRequest
+    { 
+        public string RestrictedStatus { get; set; }
+    }
 }

@@ -4,10 +4,10 @@
     <partial name="CollabNavbar" model="@Model" />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Collab.Restricted)
+            Open in Revu:
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Collab.Restricted)
+            <a href="@Model.Collab.InviteUrl">@Model.Collab.InviteUrl</a>
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Collab.Owner)
@@ -16,29 +16,46 @@
             @Html.DisplayFor(model => model.Collab.Owner)
         </dd>
         <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Collab.Restricted)
+        </dt>
+        <dd class="col-sm-10 d-inline">
+            @Html.DisplayFor(model => model.Collab.Restricted)
+            @{
+                string RestrictedStatus = Model.Collab.Restricted ? "Unrestrict Access" : "Restrict Access";
+                string newRestrictedStatus = Model.Collab.Restricted ? "false" : "true";
+                var detailParam = new Dictionary<string, string> { { "collabId", Model.Collab.Id }, { "newRestrictedStatus", newRestrictedStatus } };
+            }
+            <form asp-action="UpdateAccess" asp-all-route-data="detailParam"><input type="submit" class="btn btn-outline-info" value="@RestrictedStatus" /></form>
+        </dd>
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Collab.Created)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Collab.Created) 
+            @Html.DisplayFor(model => model.Collab.Created)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Collab.EndDate)
         </dt>
-        <dd class="col-sm-10">
-            @Model.Collab.EndDate.HasValue ? Html.DisplayFor(model => model.Collab.EndDate) : "No End Date set"
-        </dd>
+
+        @if (Model.Collab.EndDate.HasValue)
+        {
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Collab.EndDate)
+            </dd>
+
+        }
+        else
+        {
+            <dd class="col-sm-10">
+                No End Date
+            </dd>
+
+        }
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Collab.Status)
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Collab.Status)
-        </dd>
-        <dt class="col-sm-2">
-            Open in Revu:
-        </dt>
-        <dd class="col-sm-10">
-            <a href="@Model.Collab.InviteUrl">@Model.Collab.InviteUrl</a>
-
         </dd>
     </dl>
 </div>

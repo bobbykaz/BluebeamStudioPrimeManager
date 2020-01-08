@@ -142,9 +142,14 @@ namespace PrimeCollaborationManager.Services
             };
         }
 
-        public Task UpdateCollaborationAccessAsync(string id, bool restrictAccess)
+        public async Task UpdateCollaborationAccessAsync(string id, bool restrictAccess)
         {
-            throw new NotImplementedException();
+            await _Client.UpdateSessionAsync(id, null, restrictAccess, null, null, null, null);
+        }
+
+        public async Task UpdateUserRestrictedStatusAsync(string id, int userId, string restrictedStatus)
+        {
+            await _Client.UpdateSessionUserRestrictedStatus(id, userId, restrictedStatus);
         }
     }
 }

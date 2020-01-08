@@ -38,7 +38,18 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.RestrictedStatus)
                 </td>
-                <td></td>
+                <td>
+                    @if (item.RestrictedStatus == "Allow")
+                    {
+                        var routeParams = new Dictionary<string, string> { { "collabId", Model.Collab.Id }, { "page", Model.Users.CurrentPage.ToString() }, { "user", item.Id.ToString() }, { "allow", "false" } };
+                        <form asp-action="UpdateUserPermission" asp-all-route-data="routeParams" method="post"><input type="submit" class="btn btn-outline-danger" value="Deny" /></form>
+                    }
+                    else
+                    {
+                        var routeParams = new Dictionary<string, string> { { "collabId", Model.Collab.Id }, { "page", Model.Users.CurrentPage.ToString() }, { "user", item.Id.ToString() }, { "allow", "true" } };
+                        <form asp-action="UpdateUserPermission" asp-all-route-data="routeParams" method="post"><input type="submit" class="btn btn-outline-primary" value="Allow" /></form>
+                    }
+                </td>
             </tr>
             collabNum = collabNum + 1;
         }
