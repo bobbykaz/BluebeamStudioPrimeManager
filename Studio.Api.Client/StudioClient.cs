@@ -60,7 +60,7 @@ namespace Studio.Api.Client
             request.Content = new FormUrlEncodedContent(data);
 
             var response = await _Client.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+            CheckError(response);
 
             var token = JsonSerializer.Deserialize<StudioOAuthToken>(await response.Content.ReadAsStringAsync());
             return token;
@@ -71,7 +71,7 @@ namespace Studio.Api.Client
         protected async Task<T> Get<T>(string route)
         {
             var response = await _Client.GetAsync(route);
-            response.EnsureSuccessStatusCode();
+            CheckError(response);
             var content = await response.Content.ReadAsStringAsync();
 
             var responseObj = JsonSerializer.Deserialize<T>(content);
@@ -83,14 +83,14 @@ namespace Studio.Api.Client
         {
             var content = new StringContent(JsonSerializer.Serialize(request), System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PutAsync(route, content);
-            response.EnsureSuccessStatusCode();
+            CheckError(response);
         }
 
         protected async Task<TResponse> Put<TRequest, TResponse>(string route, TRequest request)
         {
             var content = new StringContent(JsonSerializer.Serialize(request), System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PutAsync(route, content);
-            response.EnsureSuccessStatusCode();
+            CheckError(response);
             var responseContent = await response.Content.ReadAsStringAsync();
             var responseObj = JsonSerializer.Deserialize<TResponse>(responseContent);
 
@@ -100,25 +100,42 @@ namespace Studio.Api.Client
         protected async Task Post(string route)
         {
             var response = await _Client.PostAsync(route, null);
-            response.EnsureSuccessStatusCode();
+            CheckError(response);
         }
 
         protected async Task Post<TRequest>(string route, TRequest request)
         {
             var content = new StringContent(JsonSerializer.Serialize(request), System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PostAsync(route, content);
-            response.EnsureSuccessStatusCode();
+            CheckError(response);
         }
 
         protected async Task<TResponse> Post<TRequest,TResponse>(string route, TRequest request)
         {
             var content = new StringContent(JsonSerializer.Serialize(request), System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PostAsync(route, content);
-            response.EnsureSuccessStatusCode();
+            CheckError(response);
             var responseContent = await response.Content.ReadAsStringAsync();
             var responseObj = JsonSerializer.Deserialize<TResponse>(responseContent);
 
             return responseObj;
+        }
+
+        public static void CheckError(HttpResponseMessage response)
+        {
+            if (!response.IsSuccessStatusCode)
+            {
+                if (!string.IsNullOrWhiteSpace(response.ReasonPhrase) && response.ReasonPhrase.IndexOf("-") > 0)
+                {
+                    int separator = response.ReasonPhrase.IndexOf("-");
+                    var e = new StudioApiException { Response = response };
+                    e.StudioErrorCode = response.ReasonPhrase.Substring(0, separator).Trim();
+                    e.StudioErrorMessage = response.ReasonPhrase.Substring(separator + 1).Trim();
+                    throw e;
+                }
+                throw new StudioApiException { Response = response, StudioErrorCode = "???", StudioErrorMessage = "A problem occurred when communicating with Bluebeam Studio." };
+            }
+            response.EnsureSuccessStatusCode();
         }
 
         public static async Task UploadFileToStudioAWS(string url, Stream contentStream, string contentType)

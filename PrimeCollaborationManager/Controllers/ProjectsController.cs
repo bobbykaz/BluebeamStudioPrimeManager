@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -31,79 +32,140 @@ namespace PrimeCollaborationManager.Controllers
 
         public async Task<IActionResult> Index(int page = 1)
         {
-            await InitClient();
-            var projects = await _CollaborationService.GetListAsync(page);
-            return View(projects);
+            try
+            {
+                await InitClient();
+                var projects = await _CollaborationService.GetListAsync(page);
+                return View(projects);
+            }
+            catch (StudioApiException e)
+            {
+                return HandleError(e);
+            }
         }
 
         public async Task<IActionResult> Details(string collabId)
         {
-            await InitClient();
-            var project = await _CollaborationService.GetDetailsAsync(collabId);
-            var model = new CollaborationDetails { Collab = project };
-            return View(model);
+            try
+            {
+                await InitClient();
+                var project = await _CollaborationService.GetDetailsAsync(collabId);
+                var model = new CollaborationDetails { Collab = project };
+                return View(model);
+            }
+            catch (StudioApiException e)
+            {
+                return HandleError(e);
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> UpdateAccess(string collabId, bool newRestrictedStatus)
         {
-            await InitClient();
-            await _CollaborationService.UpdateCollaborationAccessAsync(collabId, newRestrictedStatus);
+            try
+            {
+                await InitClient();
+                await _CollaborationService.UpdateCollaborationAccessAsync(collabId, newRestrictedStatus);
 
-            return RedirectToAction("Details", new Dictionary<string, string> { { "collabId", collabId } });
+                return RedirectToAction("Details", new Dictionary<string, string> { { "collabId", collabId } });
+            }
+            catch (StudioApiException e)
+            {
+                return HandleError(e);
+            }
         }
 
         public async Task<IActionResult> PermissionDetails(string collabId)
         {
-            await InitClient();
-            var detail = await _CollaborationService.GetDetailsAsync(collabId);
-            var perms = await _CollaborationService.GetPermissionsAsync(collabId);
-            var allPerms = _CollaborationService.GetPermissionTypes();
-            var foundTypes = perms.Select(p => p.Type).ToList();
-            foreach (var perm in allPerms)
+            try
             {
-                if (!foundTypes.Contains(perm))
-                    perms.Add(new Studio.Api.Model.Permissions.Permission { Type = perm, Allow = "Default" });
+                await InitClient();
+                var detail = await _CollaborationService.GetDetailsAsync(collabId);
+                var perms = await _CollaborationService.GetPermissionsAsync(collabId);
+                var allPerms = _CollaborationService.GetPermissionTypes();
+                var foundTypes = perms.Select(p => p.Type).ToList();
+                foreach (var perm in allPerms)
+                {
+                    if (!foundTypes.Contains(perm))
+                        perms.Add(new Studio.Api.Model.Permissions.Permission { Type = perm, Allow = "Default" });
+                }
+                var model = new CollaborationDetails { Collab = detail, Permissions = perms };
+                return View(model);
             }
-            var model = new CollaborationDetails { Collab = detail, Permissions = perms };
-            return View(model);
+            catch (StudioApiException e)
+            {
+                return HandleError(e);
+            }
         }
 
         public async Task<IActionResult> UserList(string collabId, int page = 1)
         {
-            await InitClient();
-            var detail = await _CollaborationService.GetDetailsAsync(collabId);
-            var users = await _CollaborationService.GetUsersAsync(collabId, page);
-            var model = new CollaborationDetails { Collab = detail, Users = users };
-            return View(model);
+            try
+            {
+                await InitClient();
+                var detail = await _CollaborationService.GetDetailsAsync(collabId);
+                var users = await _CollaborationService.GetUsersAsync(collabId, page);
+                var model = new CollaborationDetails { Collab = detail, Users = users };
+                return View(model);
+            }
+            catch (StudioApiException e)
+            {
+                return HandleError(e);
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> UpdateUserPermission(string collabId, int page, int user, bool allow)
         {
-            await InitClient();
-            await _CollaborationService.UpdateUserRestrictedStatusAsync(collabId, user, allow ? "Allow" : "Deny");
-            return RedirectToAction("UserList", new Dictionary<string, string> { { "collabId", collabId }, { "page", page.ToString() } });
+            try
+            {
+                await InitClient();
+                await _CollaborationService.UpdateUserRestrictedStatusAsync(collabId, user, allow ? "Allow" : "Deny");
+                return RedirectToAction("UserList", new Dictionary<string, string> { { "collabId", collabId }, { "page", page.ToString() } });
+            }
+            catch (StudioApiException e)
+            {
+                return HandleError(e);
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> Create()
         {
-            await InitClient();
-            var model = new CreateCollaboration()
+            try
             {
-                Restricted = true,
-                InitialPermissionTypes = _CollaborationService.GetPermissionTypes()
-            };
-            return View(model);
+                await InitClient();
+                var model = new CreateCollaboration()
+                {
+                    Restricted = true,
+                    InitialPermissionTypes = _CollaborationService.GetPermissionTypes()
+                };
+                return View(model);
+            }
+            catch (StudioApiException e)
+            {
+                return HandleError(e);
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateSubmit(IFormCollection form)
         {
-            await InitClient();
-            var id = await _CollaborationService.CreateAsync(form);
-            return RedirectToAction("Details", new { collabId = id });
+            try
+            {
+                await InitClient();
+                var id = await _CollaborationService.CreateAsync(form);
+                return RedirectToAction("Details", new { collabId = id });
+            }
+            catch (StudioApiException e)
+            {
+                return HandleError(e);
+            }
+        }
+
+        private IActionResult HandleError(StudioApiException e)
+        {
+            return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier, StudioError = e });
         }
     }
 }
