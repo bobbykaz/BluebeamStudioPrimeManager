@@ -4,3 +4,9 @@
 **/.vs
 
 **/appsettings.Development.json
+
+**/TestResults
+**/coverage.opencover.xml
+
+AppDb.db
+

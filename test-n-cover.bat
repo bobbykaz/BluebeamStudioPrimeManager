@@ -1,0 +1,1 @@
+dotnet test ./PrimeCollaborationManager/PrimeCollaborationManager.sln /p:CollectCoverage=true /p:CoverletOutputFormat=opencover

@@ -80,16 +80,17 @@ namespace PrimeCollaborationManager.Controllers
             try
             {
                 await InitClient();
-                var detail = await _CollaborationService.GetDetailsAsync(collabId);
-                var perms = await _CollaborationService.GetPermissionsAsync(collabId);
+                var detail =  _CollaborationService.GetDetailsAsync(collabId);
+                var perms =  _CollaborationService.GetPermissionsAsync(collabId);
+                await Task.WhenAll(detail, perms);
                 var allPerms = _CollaborationService.GetPermissionTypes();
-                var foundTypes = perms.Select(p => p.Type).ToList();
+                var foundTypes = perms.Result.Select(p => p.Type).ToList();
                 foreach (var perm in allPerms)
                 {
                     if (!foundTypes.Contains(perm))
-                        perms.Add(new Studio.Api.Model.Permissions.Permission { Type = perm, Allow = "Default" });
+                        perms.Result.Add(new Studio.Api.Model.Permissions.Permission { Type = perm, Allow = "Default" });
                 }
-                var model = new CollaborationDetails { Collab = detail, Permissions = perms };
+                var model = new CollaborationDetails { Collab = detail.Result, Permissions = perms.Result };
                 return View(model);
             }
             catch (StudioApiException e)
@@ -103,9 +104,10 @@ namespace PrimeCollaborationManager.Controllers
             try
             {
                 await InitClient();
-                var detail = await _CollaborationService.GetDetailsAsync(collabId);
-                var users = await _CollaborationService.GetUsersAsync(collabId, page);
-                var model = new CollaborationDetails { Collab = detail, Users = users };
+                var detail = _CollaborationService.GetDetailsAsync(collabId);
+                var users = _CollaborationService.GetUsersAsync(collabId, page);
+                await Task.WhenAll(detail, users);
+                var model = new CollaborationDetails { Collab = detail.Result, Users = users.Result };
                 return View(model);
             }
             catch (StudioApiException e)

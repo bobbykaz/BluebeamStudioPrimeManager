@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Studio.Api.Client
+﻿namespace Studio.Api.Client
 {
     public class StudioApplicationConfig
     {

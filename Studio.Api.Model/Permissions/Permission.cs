@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Studio.Api.Model.Permissions
 {
@@ -37,13 +35,13 @@ namespace Studio.Api.Model.Permissions
 
     public class ProjectPermissionType
     {
-        public const string CreateSessions = "";
-        public const string UndoCheckouts = "";
-        public const string Invite = "";
-        public const string ManageParticipants = "";
-        public const string ManagePermissions = "";
-        public const string ShareItems = "";
-        public const string FullControl = "";
+        public const string CreateSessions = "CreateSessions";
+        public const string UndoCheckouts = "UndoCheckouts";
+        public const string Invite = "Invite";
+        public const string ManageParticipants = "ManageParticipants";
+        public const string ManagePermissions = "ManagePermissions";
+        public const string ShareItems = "ShareItems";
+        public const string FullControl = "FullControl";
     }
 
     public class SessionPermissionType
