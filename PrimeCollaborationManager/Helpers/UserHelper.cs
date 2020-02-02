@@ -1,34 +1,57 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Studio.Api.Model.Logs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Principal;
 using System.Threading.Tasks;
 
 namespace PrimeCollaborationManager.Helpers
 {
-    public class UserHelper
+    public static class UserHelper
     {
-        public static int GetBBUserId(HttpContext ctx)
+        public static UserLog GetCurrentUser(HttpContext ctx)
         {
-            if (ctx.User.Identity != null)
-            {
-                var idClaim = ctx.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
-                return int.Parse(idClaim.Value);
-            }
+            if (ctx == null)
+                throw new ArgumentException("HttpContext is null");
 
-            throw new Exception("No user in context!");
+            var result = new UserLog
+            {
+                UserID = GetBBUserId(ctx.User),
+                UserEmail = GetEmail(ctx.User),
+                RequestID = ctx.TraceIdentifier
+            };
+
+            return result;
         }
 
-        public static string GetEmail(HttpContext ctx)
+        public static int GetBBUserId(ClaimsPrincipal userIdent)
         {
-            if (ctx.User.Identity != null)
-            {
-                var emailClaim = ctx.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
-                return emailClaim.Value;
-            }
+            if (userIdent == null || userIdent.Claims == null)
+                return -1;
 
-            throw new Exception("No user in context!");
+            var idClaim = userIdent.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            var id = -1;
+
+            if (idClaim != null && int.TryParse(idClaim.Value, out id))
+                return id;
+
+            return -1;
         }
+
+        public static string GetEmail(ClaimsPrincipal userIdent)
+        {
+            if (userIdent == null || userIdent.Claims == null)
+                return EmailNotFound;
+
+            var emailClaim = userIdent.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+            if (emailClaim == null || string.IsNullOrWhiteSpace(emailClaim.Value))
+                return EmailNotFound;
+
+            return emailClaim.Value;
+        }
+
+        public const string EmailNotFound = "[email claim not found]";
     }
 }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PrimeCollaborationManager.Data;
+using Serilog;
 using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -29,11 +29,16 @@ namespace PrimeCollaborationManager
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connection = Configuration["DB:ConnectionString"];
+            //var connection = Configuration["DB:ConnectionString"];
 
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlite(connection)
-            );
+            //services.AddDbContext<AppDbContext>(options =>
+            //    options.UseSqlite(connection)
+            //);
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.Console()
+                .CreateLogger();
 
             services.AddMvc();
 
@@ -60,7 +65,7 @@ namespace PrimeCollaborationManager
                 options.ClientId = apiConfig.ClientId;
                 options.ClientSecret = apiConfig.ClientSecret;
                 options.CallbackPath = new PathString(apiConfig.CallbackPath);
-                options.Scope.Add("full_user");
+                //options.Scope.Add("full_user");
                 options.Scope.Add("full_prime");
                 options.AuthorizationEndpoint = apiConfig.AuthorizationEndpoint;
                 options.TokenEndpoint = apiConfig.TokenEndpoint;
@@ -81,20 +86,26 @@ namespace PrimeCollaborationManager
                         var request = new HttpRequestMessage(HttpMethod.Get, context.Options.UserInformationEndpoint);
                         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", context.AccessToken);
-
                         var response = await context.Backchannel.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, context.HttpContext.RequestAborted);
                         response.EnsureSuccessStatusCode();
 
                         var user = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
 
                         context.RunClaimActions(user.RootElement);
-                    },
+                    }
                 };
             })
             .AddCookie(options =>
             {
-                options.ExpireTimeSpan = new TimeSpan(0, 55, 0);
+                options.ExpireTimeSpan = new TimeSpan(0, 5, 0);
                 options.SlidingExpiration = false;
+                options.Events = new CookieAuthenticationEvents()
+                {
+                    OnValidatePrincipal = async context =>
+                    {
+                        await RefreshTokenHelper.Refresh(context, apiConfig);
+                    }
+                };
             });
             services.AddControllersWithViews();
         }

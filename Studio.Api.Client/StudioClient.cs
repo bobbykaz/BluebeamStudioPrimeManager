@@ -1,4 +1,6 @@
-﻿using Studio.Api.Model;
+﻿using Serilog;
+using Studio.Api.Model;
+using Studio.Api.Model.Logs;
 using Studio.Api.Model.Permissions;
 using Studio.Api.Model.Sessions;
 using Studio.Api.Model.Users;
@@ -12,33 +14,30 @@ using System.Threading.Tasks;
 
 namespace Studio.Api.Client
 {
-    public interface IStudioClient 
-    { 
-    }
-
-    public class StudioClient
+    public class StudioClient : IStudioClient
     {
         protected HttpClient _Client { get; set; }
+        protected ILogger _Log { get; set; }
+        protected string _ClientId { get; set; }
+        protected string _ClientSecret { get; set; }
+        protected string _TokenEndpoint { get; set; }
 
-        public string _ClientId { get; protected set; }
-        public string _ClientSecret { get; protected set; }
+        protected UserLog _UserLog { get; set;}
 
-        public string _TokenEndpoint { get; protected set; }
-        public string _StudioApiBase { get; protected set; }
-        public string _UserInformationEndpoint { get{ return $"{_StudioApiBase}/users/me"; } }
-
-        public StudioClient(StudioApplicationConfig config)
+        public StudioClient(StudioApplicationConfig config, UserLog user, ILogger log)
         {
+            _Log = log;
+            _UserLog = user;
             _ClientId = config.ClientId;
             _ClientSecret = config.ClientSecret;
             _TokenEndpoint = config.TokenEndpoint;
-            _StudioApiBase = config.StudioApiBaseUrl;
+            var studioApiBase = config.StudioApiBaseUrl;
 
-            if (_StudioApiBase[_StudioApiBase.Length - 1] != '/')
-                _StudioApiBase = _StudioApiBase + '/';
+            if (studioApiBase[studioApiBase.Length - 1] != '/')
+                studioApiBase = studioApiBase + '/';
 
-            _Client = new HttpClient() { BaseAddress = new Uri(_StudioApiBase), Timeout = TimeSpan.FromSeconds(30) };
-            _Client.DefaultRequestHeaders.Add("Accept","application/json");
+            _Client = new HttpClient() { BaseAddress = new Uri(studioApiBase), Timeout = TimeSpan.FromSeconds(30) };
+            _Client.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
         #region Auth
@@ -58,8 +57,11 @@ namespace Studio.Api.Client
             data.Add(new KeyValuePair<string, string>("client_secret", _ClientSecret));
 
             request.Content = new FormUrlEncodedContent(data);
+            var strContent = await request.Content.ReadAsStringAsync();
 
             var response = await _Client.SendAsync(request);
+            
+            await Log(new HttpMethod("POST"), _TokenEndpoint, strContent, response);
             CheckError(response);
 
             var token = JsonSerializer.Deserialize<StudioOAuthToken>(await response.Content.ReadAsStringAsync());
@@ -71,6 +73,7 @@ namespace Studio.Api.Client
         protected async Task<T> Get<T>(string route)
         {
             var response = await _Client.GetAsync(route);
+            await Log(new HttpMethod("GET"), route, null, response);
             CheckError(response);
             var content = await response.Content.ReadAsStringAsync();
 
@@ -81,15 +84,19 @@ namespace Studio.Api.Client
 
         protected async Task Put<TRequest>(string route, TRequest request)
         {
-            var content = new StringContent(JsonSerializer.Serialize(request), System.Text.Encoding.UTF8, "application/json");
+            var strContent = JsonSerializer.Serialize(request);
+            var content = new StringContent(strContent, System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PutAsync(route, content);
+            await Log(new HttpMethod("PUT"), route, strContent, response);
             CheckError(response);
         }
 
         protected async Task<TResponse> Put<TRequest, TResponse>(string route, TRequest request)
         {
-            var content = new StringContent(JsonSerializer.Serialize(request), System.Text.Encoding.UTF8, "application/json");
+            var strContent = JsonSerializer.Serialize(request);
+            var content = new StringContent(strContent, System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PutAsync(route, content);
+            await Log(new HttpMethod("PUT"), route, strContent, response);
             CheckError(response);
             var responseContent = await response.Content.ReadAsStringAsync();
             var responseObj = JsonSerializer.Deserialize<TResponse>(responseContent);
@@ -100,25 +107,37 @@ namespace Studio.Api.Client
         protected async Task Post(string route)
         {
             var response = await _Client.PostAsync(route, null);
+            await Log(new HttpMethod("POST"), route, null, response);
             CheckError(response);
         }
 
         protected async Task Post<TRequest>(string route, TRequest request)
         {
-            var content = new StringContent(JsonSerializer.Serialize(request), System.Text.Encoding.UTF8, "application/json");
+            var strContent = JsonSerializer.Serialize(request);
+            var content = new StringContent(strContent, System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PostAsync(route, content);
+            await Log(new HttpMethod("POST"), route, strContent, response);
             CheckError(response);
         }
 
-        protected async Task<TResponse> Post<TRequest,TResponse>(string route, TRequest request)
+        protected async Task<TResponse> Post<TRequest, TResponse>(string route, TRequest request)
         {
-            var content = new StringContent(JsonSerializer.Serialize(request), System.Text.Encoding.UTF8, "application/json");
+            var strContent = JsonSerializer.Serialize(request);
+            var content = new StringContent(strContent, System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PostAsync(route, content);
+            await Log(new HttpMethod("POST"), route, strContent, response);
             CheckError(response);
             var responseContent = await response.Content.ReadAsStringAsync();
             var responseObj = JsonSerializer.Deserialize<TResponse>(responseContent);
 
             return responseObj;
+        }
+
+        public async Task Log(HttpMethod method, string route, string reqBody, HttpResponseMessage resp)
+        {
+            var reqLog = new { Method = method, Url = route, Body = reqBody};
+            var respLog = new { Code = resp.StatusCode, ReasonPhrase = resp.ReasonPhrase, Headers = resp.Headers, Body = await resp.Content?.ReadAsStringAsync()};
+            _Log.Information("User: {@User}; Request: {@Request}; Response: {@Response}", _UserLog, reqLog, respLog);
         }
 
         public static void CheckError(HttpResponseMessage response)
@@ -159,7 +178,7 @@ namespace Studio.Api.Client
 
         public static async Task<Stream> DownloadFile(string url)
         {
-            using(var client = new HttpClient())
+            using (var client = new HttpClient())
             {
                 var response = await client.GetAsync(url);
                 return await response.Content.ReadAsStreamAsync();
@@ -226,7 +245,7 @@ namespace Studio.Api.Client
         public async Task<Project> UpdateProjectAsync(string id, string newName, bool? access, bool? notifications, string newOwnerEmail)
         {
             var req = new UpdateProjectRequest
-            { 
+            {
                 Name = newName,
                 Restricted = access,
                 Notification = notifications,
@@ -253,7 +272,7 @@ namespace Studio.Api.Client
             return await Get<ProjectFolder>($"projects/{projectId}/folders/{folderId}");
         }
 
-        public async Task<ProjectFolderContents> GetProjectFolderContents( string projectId, int folderId)
+        public async Task<ProjectFolderContents> GetProjectFolderContents(string projectId, int folderId)
         {
             return await Get<ProjectFolderContents>($"projects/{projectId}/folders/{folderId}/items");
         }

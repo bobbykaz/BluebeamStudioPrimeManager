@@ -219,7 +219,7 @@ namespace PrimeCollaborationManager.Controllers.Tests
         protected override Task InitClient()
         {
             IsInitialized = true;
-            _CollaborationService = MockService;
+            CollaborationService = MockService;
             return Task.CompletedTask;
         }
     }

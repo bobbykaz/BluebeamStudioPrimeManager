@@ -16,8 +16,8 @@ namespace PrimeCollaborationManager.Services
         static readonly string[] PermissionTypes = new string[] { "SaveCopy", "PrintCopy", "Markup", "AddDocuments", "MarkupAlert", "FullControl" };
         const int PageSize = 5;
 
-        protected StudioClient _Client { get; set; }
-        public SessionsCollabService(StudioClient client)
+        protected IStudioClient _Client { get; set; }
+        public SessionsCollabService(IStudioClient client)
         {
             _Client = client;
         }

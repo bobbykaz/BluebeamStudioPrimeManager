@@ -7,27 +7,35 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PrimeCollaborationManager.Helpers;
 using PrimeCollaborationManager.Models;
 using PrimeCollaborationManager.Services;
+using Serilog;
+using Serilog.Core;
 using Studio.Api.Client;
+using Studio.Api.Model.Logs;
 
 namespace PrimeCollaborationManager.Controllers
 {
     [Authorize]
     public class ProjectsController : Controller
     {
-        protected StudioClient _Client { get; set; }
-        protected ICollaborationService _CollaborationService { get; set; }
+        protected StudioApplicationConfig Config { get; set; }
+        protected StudioClient Client { get; set; }
+        protected UserLog UserLog { get; set; }
+        protected ICollaborationService CollaborationService { get; set; }
         public ProjectsController(StudioApplicationConfig config)
         {
-            _Client = new StudioClient(config);
+            Config = config;
         }
 
         protected virtual async Task InitClient()
         {
+            UserLog = UserHelper.GetCurrentUser(HttpContext);
+            Client = new StudioClient(Config, UserLog, Log.Logger);
             var token = await HttpContext.GetTokenAsync("access_token");
-            _Client.SetAuthHeader(token);
-            _CollaborationService = new ProjectsCollabService(_Client);
+            Client.SetAuthHeader(token);
+            CollaborationService = new ProjectsCollabService(Client);
         }
 
         public async Task<IActionResult> Index(int page = 1)
@@ -35,7 +43,7 @@ namespace PrimeCollaborationManager.Controllers
             try
             {
                 await InitClient();
-                var projects = await _CollaborationService.GetListAsync(page);
+                var projects = await CollaborationService.GetListAsync(page);
                 return View(projects);
             }
             catch (StudioApiException e)
@@ -49,7 +57,7 @@ namespace PrimeCollaborationManager.Controllers
             try
             {
                 await InitClient();
-                var project = await _CollaborationService.GetDetailsAsync(collabId);
+                var project = await CollaborationService.GetDetailsAsync(collabId);
                 var model = new CollaborationDetails { Collab = project };
                 return View(model);
             }
@@ -65,7 +73,7 @@ namespace PrimeCollaborationManager.Controllers
             try
             {
                 await InitClient();
-                await _CollaborationService.UpdateCollaborationAccessAsync(collabId, newRestrictedStatus);
+                await CollaborationService.UpdateCollaborationAccessAsync(collabId, newRestrictedStatus);
 
                 return RedirectToAction("Details", new Dictionary<string, string> { { "collabId", collabId } });
             }
@@ -80,10 +88,10 @@ namespace PrimeCollaborationManager.Controllers
             try
             {
                 await InitClient();
-                var detail =  _CollaborationService.GetDetailsAsync(collabId);
-                var perms =  _CollaborationService.GetPermissionsAsync(collabId);
+                var detail =  CollaborationService.GetDetailsAsync(collabId);
+                var perms =  CollaborationService.GetPermissionsAsync(collabId);
                 await Task.WhenAll(detail, perms);
-                var allPerms = _CollaborationService.GetPermissionTypes();
+                var allPerms = CollaborationService.GetPermissionTypes();
                 var foundTypes = perms.Result.Select(p => p.Type).ToList();
                 foreach (var perm in allPerms)
                 {
@@ -104,8 +112,8 @@ namespace PrimeCollaborationManager.Controllers
             try
             {
                 await InitClient();
-                var detail = _CollaborationService.GetDetailsAsync(collabId);
-                var users = _CollaborationService.GetUsersAsync(collabId, page);
+                var detail = CollaborationService.GetDetailsAsync(collabId);
+                var users = CollaborationService.GetUsersAsync(collabId, page);
                 await Task.WhenAll(detail, users);
                 var model = new CollaborationDetails { Collab = detail.Result, Users = users.Result };
                 return View(model);
@@ -122,7 +130,7 @@ namespace PrimeCollaborationManager.Controllers
             try
             {
                 await InitClient();
-                await _CollaborationService.UpdateUserRestrictedStatusAsync(collabId, user, allow ? "Allow" : "Deny");
+                await CollaborationService.UpdateUserRestrictedStatusAsync(collabId, user, allow ? "Allow" : "Deny");
                 return RedirectToAction("UserList", new Dictionary<string, string> { { "collabId", collabId }, { "page", page.ToString() } });
             }
             catch (StudioApiException e)
@@ -140,7 +148,7 @@ namespace PrimeCollaborationManager.Controllers
                 var model = new CreateCollaboration()
                 {
                     Restricted = true,
-                    InitialPermissionTypes = _CollaborationService.GetPermissionTypes()
+                    InitialPermissionTypes = CollaborationService.GetPermissionTypes()
                 };
                 return View(model);
             }
@@ -156,7 +164,7 @@ namespace PrimeCollaborationManager.Controllers
             try
             {
                 await InitClient();
-                var id = await _CollaborationService.CreateAsync(form);
+                var id = await CollaborationService.CreateAsync(form);
                 return RedirectToAction("Details", new { collabId = id });
             }
             catch (StudioApiException e)

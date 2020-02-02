@@ -1,32 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Studio.Api.Client
 {
     public class StudioOAuthToken
     {
-        public class TokenDto
-        {
-            //[JsonProperty("access_token")]
-            public string AccessToken { get; set; }
-            //[JsonProperty("userName")]
-            public string UserName { get; set; }
-            //[JsonProperty("client_id")]
-            public string ClientID { get; set; }
-           // [JsonProperty("scope")]
-            public string Scopes { get; set; }
-            //[JsonProperty("expires_in")]
-            public int ExpiresIn { get; set; }
-            //[JsonProperty(".expires")]
-            public DateTimeOffset ExpiresTime { get; set; }
-            //[JsonProperty(".issued")]
-            public DateTimeOffset IssuedTime { get; set; }
-            //[JsonProperty("refresh_token")]
-            public string RefreshToken { get; set; }
-            //[JsonProperty("refresh_token_expires_in")]
-            public int RefreshTokenExpiresIn { get; set; }
-            public DateTimeOffset RefreshTokenExpiresTime { get { return IssuedTime.AddSeconds(RefreshTokenExpiresIn); } }
-        }
+        [JsonPropertyName("access_token")]
+        public string AccessToken { get; set; }
+        [JsonPropertyName("userName")]
+        public string UserName { get; set; }
+        [JsonPropertyName("client_id")]
+        public string ClientID { get; set; }
+        [JsonPropertyName("scope")]
+        public string Scopes { get; set; }
+        [JsonPropertyName("expires_in")]
+        public int ExpiresIn { get; set; }
+        [JsonPropertyName(".expires")]
+        public string Expires { get; set; }
+        public DateTime ExpiresTime { get { return DateTime.Parse(Expires); }  }
+        [JsonPropertyName(".issued")]
+        public string Issued { get; set; }
+        public DateTime IssuedTime { get { return DateTime.Parse(Expires); } }
+        [JsonPropertyName("refresh_token")]
+        public string RefreshToken { get; set; }
+        [JsonPropertyName("refresh_token_expires_in")]
+        public string RefreshTokenExpiresIn { get; set; }
+        public DateTime RefreshTokenExpiresTime { get { return IssuedTime.AddSeconds(int.Parse(RefreshTokenExpiresIn)); } }
     }
 }

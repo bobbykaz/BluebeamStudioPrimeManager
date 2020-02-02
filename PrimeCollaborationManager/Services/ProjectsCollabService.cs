@@ -16,8 +16,8 @@ namespace PrimeCollaborationManager.Services
         static readonly string[] PermissionTypes = new string[] { "Invite", "ManageParticipants", "ManagePermissions", "UndoCheckouts", "CreateSessions", "ShareItems", "FullControl" };
         const int PageSize = 5;
 
-        protected StudioClient _Client { get; set; }
-        public ProjectsCollabService(StudioClient client)
+        protected IStudioClient _Client { get; set; }
+        public ProjectsCollabService(IStudioClient client)
         {
             _Client = client;
         }

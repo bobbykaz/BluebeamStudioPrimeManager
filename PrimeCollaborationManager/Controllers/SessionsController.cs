@@ -21,8 +21,8 @@ namespace PrimeCollaborationManager.Controllers
         protected override async Task InitClient()
         {
             var token = await HttpContext.GetTokenAsync("access_token");
-            _Client.SetAuthHeader(token);
-            _CollaborationService = new SessionsCollabService(_Client);
+            Client.SetAuthHeader(token);
+            CollaborationService = new SessionsCollabService(Client);
         }
     }
 }
