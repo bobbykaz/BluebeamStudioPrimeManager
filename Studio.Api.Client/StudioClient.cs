@@ -60,9 +60,8 @@ namespace Studio.Api.Client
             var strContent = await request.Content.ReadAsStringAsync();
 
             var response = await _Client.SendAsync(request);
-            
-            await Log(new HttpMethod("POST"), _TokenEndpoint, strContent, response);
-            CheckError(response);
+
+            await CheckError(response);
 
             var token = JsonSerializer.Deserialize<StudioOAuthToken>(await response.Content.ReadAsStringAsync());
             return token;
@@ -73,8 +72,7 @@ namespace Studio.Api.Client
         protected async Task<T> Get<T>(string route)
         {
             var response = await _Client.GetAsync(route);
-            await Log(new HttpMethod("GET"), route, null, response);
-            CheckError(response);
+            await CheckError(response);
             var content = await response.Content.ReadAsStringAsync();
 
             var responseObj = JsonSerializer.Deserialize<T>(content);
@@ -87,8 +85,7 @@ namespace Studio.Api.Client
             var strContent = JsonSerializer.Serialize(request);
             var content = new StringContent(strContent, System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PutAsync(route, content);
-            await Log(new HttpMethod("PUT"), route, strContent, response);
-            CheckError(response);
+            await CheckError(response);
         }
 
         protected async Task<TResponse> Put<TRequest, TResponse>(string route, TRequest request)
@@ -96,8 +93,7 @@ namespace Studio.Api.Client
             var strContent = JsonSerializer.Serialize(request);
             var content = new StringContent(strContent, System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PutAsync(route, content);
-            await Log(new HttpMethod("PUT"), route, strContent, response);
-            CheckError(response);
+            await CheckError(response);
             var responseContent = await response.Content.ReadAsStringAsync();
             var responseObj = JsonSerializer.Deserialize<TResponse>(responseContent);
 
@@ -107,8 +103,7 @@ namespace Studio.Api.Client
         protected async Task Post(string route)
         {
             var response = await _Client.PostAsync(route, null);
-            await Log(new HttpMethod("POST"), route, null, response);
-            CheckError(response);
+            await CheckError(response);
         }
 
         protected async Task Post<TRequest>(string route, TRequest request)
@@ -116,8 +111,7 @@ namespace Studio.Api.Client
             var strContent = JsonSerializer.Serialize(request);
             var content = new StringContent(strContent, System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PostAsync(route, content);
-            await Log(new HttpMethod("POST"), route, strContent, response);
-            CheckError(response);
+            await CheckError(response);
         }
 
         protected async Task<TResponse> Post<TRequest, TResponse>(string route, TRequest request)
@@ -125,23 +119,23 @@ namespace Studio.Api.Client
             var strContent = JsonSerializer.Serialize(request);
             var content = new StringContent(strContent, System.Text.Encoding.UTF8, "application/json");
             var response = await _Client.PostAsync(route, content);
-            await Log(new HttpMethod("POST"), route, strContent, response);
-            CheckError(response);
+            await Log(response);
+            await CheckError(response);
             var responseContent = await response.Content.ReadAsStringAsync();
             var responseObj = JsonSerializer.Deserialize<TResponse>(responseContent);
 
             return responseObj;
         }
 
-        public async Task Log(HttpMethod method, string route, string reqBody, HttpResponseMessage resp)
+        public async Task Log(HttpResponseMessage resp)
         {
-            var reqLog = new { Method = method, Url = route, Body = reqBody};
-            var respLog = new { Code = resp.StatusCode, ReasonPhrase = resp.ReasonPhrase, Headers = resp.Headers, Body = await resp.Content?.ReadAsStringAsync()};
-            _Log.Information("User: {@User}; Request: {@Request}; Response: {@Response}", _UserLog, reqLog, respLog);
+            var httpLog = await HttpLog.FromHttpResponse(resp);
+            _Log.Information("User: {@User}; ApiCall: {@ApiCall}", _UserLog, httpLog);
         }
 
-        public static void CheckError(HttpResponseMessage response)
+        public async Task CheckError(HttpResponseMessage response)
         {
+            await Log(response);
             if (!response.IsSuccessStatusCode)
             {
                 if (!string.IsNullOrWhiteSpace(response.ReasonPhrase) && response.ReasonPhrase.IndexOf("-") > 0)

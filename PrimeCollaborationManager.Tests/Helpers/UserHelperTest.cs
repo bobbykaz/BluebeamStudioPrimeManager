@@ -22,7 +22,8 @@ namespace PrimeCollaborationManager.Tests.Helpers
 
             Assert.Equal("test", rslt.UserEmail);
             Assert.Equal(117, rslt.UserID);
-            Assert.Equal("trace", rslt.RequestID);
+            Assert.Equal("trace", rslt.TraceIdentifier);
+            Assert.True(!string.IsNullOrWhiteSpace(rslt.RequestID));
         }
 
         [Fact]
@@ -41,7 +42,8 @@ namespace PrimeCollaborationManager.Tests.Helpers
 
             Assert.Equal(UserHelper.EmailNotFound, rslt.UserEmail);
             Assert.Equal(-1, rslt.UserID);
-            Assert.Equal("trace", rslt.RequestID);
+            Assert.Equal("trace", rslt.TraceIdentifier);
+            Assert.True(!string.IsNullOrWhiteSpace(rslt.RequestID));
         }
 
         [Fact]
@@ -54,7 +56,8 @@ namespace PrimeCollaborationManager.Tests.Helpers
 
             Assert.Equal(UserHelper.EmailNotFound, rslt.UserEmail);
             Assert.Equal(-1, rslt.UserID);
-            Assert.Equal("trace", rslt.RequestID);
+            Assert.Equal("trace", rslt.TraceIdentifier);
+            Assert.True(!string.IsNullOrWhiteSpace(rslt.RequestID));
         }
 
         [Fact]
@@ -68,7 +71,8 @@ namespace PrimeCollaborationManager.Tests.Helpers
 
             Assert.Equal(UserHelper.EmailNotFound, rslt.UserEmail);
             Assert.Equal(117, rslt.UserID);
-            Assert.Equal("trace", rslt.RequestID);
+            Assert.Equal("trace", rslt.TraceIdentifier);
+            Assert.True(!string.IsNullOrWhiteSpace(rslt.RequestID));
         }
 
         private ClaimsPrincipal GetFakePrincipal(string email, int id)

@@ -48,7 +48,7 @@ namespace PrimeCollaborationManager
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Log.Logger.Error("Error Refreshing token {Exception}",e);
                 ctx.RejectPrincipal();
             }
         }

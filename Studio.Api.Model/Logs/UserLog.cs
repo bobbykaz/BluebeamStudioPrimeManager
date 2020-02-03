@@ -9,5 +9,6 @@ namespace Studio.Api.Model.Logs
         public int UserID { get; set; }
         public string UserEmail { get; set; }
         public string RequestID { get; set; }
+        public string TraceIdentifier { get; set; }
     }
 }

@@ -131,7 +131,7 @@ namespace PrimeCollaborationManager.Controllers
             {
                 await InitClient();
                 await CollaborationService.UpdateUserRestrictedStatusAsync(collabId, user, allow ? "Allow" : "Deny");
-                return RedirectToAction("UserList", new Dictionary<string, string> { { "collabId", collabId }, { "page", page.ToString() } });
+                return RedirectToAction("UserList", new Dictionary<string, string> { { "collabId", collabId }, { "page", $"{page}" } });
             }
             catch (StudioApiException e)
             {
@@ -175,6 +175,7 @@ namespace PrimeCollaborationManager.Controllers
 
         private IActionResult HandleError(StudioApiException e)
         {
+            Log.Logger.Error("Error encountered; User: {@User}; Exception: {Exception}", UserLog, e);
             return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier, StudioError = e });
         }
     }
