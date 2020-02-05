@@ -61,7 +61,7 @@ namespace PrimeCollaborationManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Prime Admin Toolkit.
+        ///   Looks up a localized string similar to Admin Toolkit.
         /// </summary>
         internal static string AppName {
             get {

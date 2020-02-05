@@ -26,7 +26,7 @@ namespace PrimeCollaborationManager.Controllers
             Client = new StudioClient(Config, UserLog, Log.Logger);
             var token = await HttpContext.GetTokenAsync("access_token");
             Client.SetAuthHeader(token);
-            CollaborationService = new ProjectsCollabService(Client);
+            CollaborationService = new SessionsCollabService(Client);
         }
     }
 }

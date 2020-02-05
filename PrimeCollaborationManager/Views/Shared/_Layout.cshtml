@@ -11,7 +11,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PrimeCollaborationManager</a>
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Admin Toolkit</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -22,10 +22,10 @@
                         @if (User != null && User.Identity.IsAuthenticated && !String.IsNullOrEmpty(User.Identity.Name))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="Index">Projects</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Projects" asp-action="Index">Studio Projects</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Sessions" asp-action="Index">Sessions</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Sessions" asp-action="Index">Studio Sessions</a>
                             </li>
                         }
                     </ul>
@@ -47,7 +47,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2019 - Prime Admin Toolkit - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; @DateTime.UtcNow.Year - Admin Toolkit - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> - <a asp-area="" asp-controller="Home" asp-action="Help">Help</a>- <a asp-area="" asp-controller="Home" asp-action="Features">Features</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

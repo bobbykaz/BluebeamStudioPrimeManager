@@ -27,7 +27,12 @@ namespace PrimeCollaborationManager.Controllers
             return View("Index",_Config.ClientId);
         }
 
-        public IActionResult Privacy()
+        public IActionResult Help()
+        {
+            return View();
+        }
+
+        public IActionResult Features()
         {
             return View();
         }
