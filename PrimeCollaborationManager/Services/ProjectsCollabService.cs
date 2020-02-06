@@ -13,7 +13,7 @@ namespace PrimeCollaborationManager.Services
 {
     public class ProjectsCollabService : ICollaborationService
     {
-        static readonly string[] PermissionTypes = new string[] { "Invite", "ManageParticipants", "ManagePermissions", "UndoCheckouts", "CreateSessions", "ShareItems", "FullControl" };
+        static readonly string[] PermissionTypes = new string[] { "UndoCheckouts", "CreateSessions", "ShareItems", "Invite", "ManageParticipants", "ManagePermissions", "FullControl" };
         const int PageSize = 5;
 
         protected IStudioClient _Client { get; set; }
@@ -52,9 +52,9 @@ namespace PrimeCollaborationManager.Services
             return PermissionTypes.ToList();
         }
 
-        public Task SetPermissionsAsync(string id, string permission, bool? allow)
+        public async Task SetPermissionsAsync(string id, string permission, bool? allow)
         {
-            throw new NotImplementedException();
+            await _Client.UpdateProjectPermissions(id, new Permission(permission, allow));
         }
 
         public async Task UpdateCollaborationAccessAsync(string id, bool restrictAccess)
@@ -105,7 +105,7 @@ namespace PrimeCollaborationManager.Services
                         break;
                     default:
                         if(formValIsBool)
-                            pList.Add(new Permission { Type = key, Allow = PermissionValue.Allow });
+                            pList.Add(new Permission(key, true));
                         break;
                 }
             }
@@ -117,7 +117,7 @@ namespace PrimeCollaborationManager.Services
             missingTypes.RemoveAll(s => chosenPermTypes.Contains(s));
             foreach (var missingPerm in missingTypes)
             { 
-                pList.Add(new Permission { Type = missingPerm, Allow = PermissionValue.Deny });
+                pList.Add(new Permission(missingPerm, false));
             }
             
             foreach (var perm in pList)
@@ -149,6 +149,11 @@ namespace PrimeCollaborationManager.Services
         public async Task UpdateUserRestrictedStatusAsync(string id, int userId, string restrictedStatus)
         {
             await _Client.UpdateProjectUserRestrictedStatus(id, userId, restrictedStatus);
+        }
+
+        public Task SetUserPermissionsAsync(string id, int userId, string permission, bool? allow)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -23,12 +23,12 @@ namespace Studio.Api.Model.Logs
 
             result.Method = response.RequestMessage.Method.Method;
             result.Route = response.RequestMessage.RequestUri.ToString();
-            if(response.RequestMessage.Content != null)
+            if(!response.IsSuccessStatusCode && response.RequestMessage.Content != null)
                 result.RequestBody = await response.RequestMessage.Content.ReadAsStringAsync();
 
             result.ReasonPhrase = response.ReasonPhrase;
             result.StatusCode = (int)response.StatusCode;
-            if(response.Content != null)
+            if(!response.IsSuccessStatusCode && response.Content != null )
                 result.ResponseBody = await response.Content.ReadAsStringAsync();
             
             foreach (var pair in response.Headers)

@@ -96,10 +96,30 @@ namespace PrimeCollaborationManager.Controllers
                 foreach (var perm in allPerms)
                 {
                     if (!foundTypes.Contains(perm))
-                        perms.Result.Add(new Studio.Api.Model.Permissions.Permission { Type = perm, Allow = "Default" });
+                        perms.Result.Add(new Studio.Api.Model.Permissions.Permission(perm, null));
                 }
                 var model = new CollaborationDetails { Collab = detail.Result, Permissions = perms.Result };
                 return View(model);
+            }
+            catch (StudioApiException e)
+            {
+                return HandleError(e);
+            }
+        }
+
+        public async Task<IActionResult> UpdatePermission(string collabId, string type, int allow)
+        {
+            try
+            {
+                await InitClient();
+                bool? allowSetting = null;
+                if (allow == 1)
+                    allowSetting = true;
+                if (allow == 2)
+                    allowSetting = false;
+
+                await CollaborationService.SetPermissionsAsync(collabId, type, allowSetting);
+                return RedirectToAction("PermissionDetails", new Dictionary<string, string> { { "collabId", collabId } });
             }
             catch (StudioApiException e)
             {

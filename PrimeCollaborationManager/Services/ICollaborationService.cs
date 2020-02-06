@@ -13,6 +13,7 @@ namespace PrimeCollaborationManager.Services
         Task UpdateCollaborationAccessAsync(string id, bool restrictAccess);
         Task UpdateUserRestrictedStatusAsync(string id, int userId, string restrictedStatus);
         Task SetPermissionsAsync(string id, string permission, bool? allow);
+        Task SetUserPermissionsAsync(string id, int userId, string permission, bool? allow);
         List<string> GetPermissionTypes();
         Task<string> CreateAsync(IFormCollection form);
     }

@@ -1,6 +1,7 @@
 ﻿@model CollaborationDetails
 
 <partial name="CollabNavbar" model="@Model" />
+<p>These permissions will be applied to users who have access to this Studio @Model.Collab.Type, but do not have Group or User permissions set.</p>
 <table class="table">
     <thead class="thead-dark">
         <tr>
@@ -8,22 +9,43 @@
                 Permission Type
             </th>
             <th>
-                Setting
+                Current Setting
             </th>
+            <th></th>
+            <th></th>
             <th></th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in Model.Permissions)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Type)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Allow)
-                </td>
-            </tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Allow)
+            </td>
+            <td>
+                @{
+                    var routeParams = new Dictionary<string, string>
+                            { { "collabId", Model.Collab.Id }, { "type", item.Type }, { "allow", "1"} };
+                    <form asp-action="UpdatePermission" asp-all-route-data="routeParams" method="post"><input type="submit" class="btn btn-outline-primary" value="Set to 'Allow'" /></form>
+                }
+            </td>
+            <td>
+                @{
+                    routeParams["allow"] = "2";
+                    <form asp-action="UpdatePermission" asp-all-route-data="routeParams" method="post"><input type="submit" class="btn btn-outline-danger" value="Set to 'Deny'" /></form>
+                }
+            </td>
+            <td>
+                @{
+                    routeParams["allow"] = "3";
+                    <form asp-action="UpdatePermission" asp-all-route-data="routeParams" method="post"><input type="submit" class="btn btn-outline-info" value="Set to 'Default'" /></form>
+                }
+            </td>
+        </tr>
         }
     </tbody>
 </table>

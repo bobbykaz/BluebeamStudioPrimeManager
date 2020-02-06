@@ -101,7 +101,7 @@ namespace PrimeCollaborationManager.Services
                         break;
                     default:
                         if (formValIsBool)
-                            pList.Add(new Permission { Type = key, Allow = PermissionValue.Allow });
+                            pList.Add(new Permission(key, true));
                         break;
                 }
             }
@@ -113,7 +113,7 @@ namespace PrimeCollaborationManager.Services
             missingTypes.RemoveAll(s => chosenPermTypes.Contains(s));
             foreach (var missingPerm in missingTypes)
             {
-                pList.Add(new Permission { Type = missingPerm, Allow = PermissionValue.Deny });
+                pList.Add(new Permission(missingPerm, false));
             }
 
             foreach (var perm in pList)
@@ -150,6 +150,11 @@ namespace PrimeCollaborationManager.Services
         public async Task UpdateUserRestrictedStatusAsync(string id, int userId, string restrictedStatus)
         {
             await _Client.UpdateSessionUserRestrictedStatus(id, userId, restrictedStatus);
+        }
+
+        public Task SetUserPermissionsAsync(string id, int userId, string permission, bool? allow)
+        {
+            throw new NotImplementedException();
         }
     }
 }

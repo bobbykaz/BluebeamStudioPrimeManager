@@ -16,6 +16,17 @@ namespace Studio.Api.Model.Permissions
     {
         public string Type { get; set; }
         public string Allow { get; set; }
+
+        public Permission()
+        { }
+
+        public Permission(string type, bool? allow)
+        {
+            Type = type;
+            Allow = allow.HasValue ?
+                                    (allow.Value ? PermissionValue.Allow : PermissionValue.Deny)
+                                    : PermissionValue.Default;
+        }
     }
 
     public class PermissionValue
