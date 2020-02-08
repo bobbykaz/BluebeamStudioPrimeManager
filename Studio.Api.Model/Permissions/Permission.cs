@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Studio.Api.Model.Permissions
 {
@@ -26,6 +27,37 @@ namespace Studio.Api.Model.Permissions
             Allow = allow.HasValue ?
                                     (allow.Value ? PermissionValue.Allow : PermissionValue.Deny)
                                     : PermissionValue.Default;
+        }
+
+        public Permission(string type, string allow)
+        {
+            Type = type;
+            switch (allow)
+            {
+                case PermissionValue.Allow:
+                    Allow = PermissionValue.Allow;
+                    break;
+                case PermissionValue.Deny:
+                    Allow = PermissionValue.Deny;
+                    break;
+                case PermissionValue.Default:
+                    Allow = PermissionValue.Default;
+                    break;
+                default:
+                    throw new ArgumentException($"Permission 'Allow' not allowed to have value: {allow}");
+                    break;
+            }
+        }
+
+        public static bool AllowIsValid(string allow)
+        {
+            if (string.IsNullOrWhiteSpace(allow) || allow == "-")
+                return false;
+
+            if (allow == "Allow" || allow == "Deny" || allow == "Default")
+                return true;
+
+            return false;
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Studio.Api.Model.Logs;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 
@@ -17,7 +18,7 @@ namespace PrimeCollaborationManager.Helpers
             {
                 UserID = GetBBUserId(ctx.User),
                 UserEmail = GetEmail(ctx.User),
-                RequestID = Guid.NewGuid().ToString(),
+                RequestID = Activity.Current?.Id ?? Guid.NewGuid().ToString(),
                 TraceIdentifier = ctx.TraceIdentifier
             };
 

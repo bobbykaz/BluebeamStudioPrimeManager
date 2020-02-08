@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PrimeCollaborationManager.Helpers;
 using PrimeCollaborationManager.Models;
+using PrimeCollaborationManager.Models.Requests;
 using PrimeCollaborationManager.Services;
 using Serilog;
 using Serilog.Core;
@@ -67,6 +68,7 @@ namespace PrimeCollaborationManager.Controllers
             }
         }
 
+        #region permissions
         [HttpPost]
         public async Task<IActionResult> UpdateAccess(string collabId, bool newRestrictedStatus)
         {
@@ -96,7 +98,7 @@ namespace PrimeCollaborationManager.Controllers
                 foreach (var perm in allPerms)
                 {
                     if (!foundTypes.Contains(perm))
-                        perms.Result.Add(new Studio.Api.Model.Permissions.Permission(perm, null));
+                        perms.Result.Add(new Studio.Api.Model.Permissions.Permission(perm, (bool?)null));
                 }
                 var model = new CollaborationDetails { Collab = detail.Result, Permissions = perms.Result };
                 return View(model);
@@ -107,26 +109,22 @@ namespace PrimeCollaborationManager.Controllers
             }
         }
 
-        public async Task<IActionResult> UpdatePermission(string collabId, string type, int allow)
+        public async Task<IActionResult> UpdatePermissions([Bind] UpdateCollabPermissionsRequest request)
         {
             try
             {
                 await InitClient();
-                bool? allowSetting = null;
-                if (allow == 1)
-                    allowSetting = true;
-                if (allow == 2)
-                    allowSetting = false;
-
-                await CollaborationService.SetPermissionsAsync(collabId, type, allowSetting);
-                return RedirectToAction("PermissionDetails", new Dictionary<string, string> { { "collabId", collabId } });
+                await CollaborationService.SetPermissionsAsync(request);
+                return RedirectToAction("PermissionDetails", new Dictionary<string, string> { { "collabId", request.CollabId } });
             }
             catch (StudioApiException e)
             {
                 return HandleError(e);
             }
         }
+        #endregion
 
+        #region Users
         public async Task<IActionResult> UserList(string collabId, int page = 1)
         {
             try
@@ -158,7 +156,9 @@ namespace PrimeCollaborationManager.Controllers
                 return HandleError(e);
             }
         }
+        #endregion
 
+        #region CreateProject
         [HttpGet]
         public async Task<IActionResult> Create()
         {
@@ -192,6 +192,7 @@ namespace PrimeCollaborationManager.Controllers
                 return HandleError(e);
             }
         }
+        #endregion
 
         private IActionResult HandleError(StudioApiException e)
         {

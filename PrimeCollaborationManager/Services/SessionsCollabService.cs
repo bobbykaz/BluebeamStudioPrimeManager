@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using PrimeCollaborationManager.Models;
+using PrimeCollaborationManager.Models.Requests;
 using Studio.Api.Client;
 using Studio.Api.Model.Permissions;
 using Studio.Api.Model.Sessions;
@@ -52,9 +53,31 @@ namespace PrimeCollaborationManager.Services
             return PermissionTypes.ToList();
         }
 
-        public Task SetPermissionsAsync(string id, string permission, bool? allow)
+        public async Task SetPermissionsAsync(UpdateCollabPermissionsRequest request)
         {
-            throw new NotImplementedException();
+            if (request == null)
+                return;
+
+            var id = request.CollabId;
+
+            var tasks = new List<Task>();
+
+            if (Permission.AllowIsValid(request.SaveCopy))
+                tasks.Add(_Client.UpdateSessionPermissions(id, new Permission("SaveCopy", request.SaveCopy)));
+            if (Permission.AllowIsValid(request.PrintCopy))
+                tasks.Add(_Client.UpdateSessionPermissions(id, new Permission("PrintCopy", request.PrintCopy)));
+            
+            if (Permission.AllowIsValid(request.Markup))
+                tasks.Add(_Client.UpdateSessionPermissions(id, new Permission("Markup", request.Markup)));
+            if (Permission.AllowIsValid(request.AddDocuments))
+                tasks.Add(_Client.UpdateSessionPermissions(id, new Permission("AddDocuments", request.AddDocuments)));
+            if (Permission.AllowIsValid(request.MarkupAlert))
+                tasks.Add(_Client.UpdateSessionPermissions(id, new Permission("MarkupAlert", request.MarkupAlert)));
+
+            if (Permission.AllowIsValid(request.FullControl))
+                tasks.Add(_Client.UpdateSessionPermissions(id, new Permission("FullControl", request.FullControl)));
+
+            await Task.WhenAll(tasks);
         }
 
         public Collaboration ConvertToCollab(Session session)

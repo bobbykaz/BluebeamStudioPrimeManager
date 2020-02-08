@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using PrimeCollaborationManager.Models.Requests;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace PrimeCollaborationManager.Services
         Task<Models.PagedResult<Studio.Api.Model.Users.User>> GetUsersAsync(string id, int page = 1);
         Task UpdateCollaborationAccessAsync(string id, bool restrictAccess);
         Task UpdateUserRestrictedStatusAsync(string id, int userId, string restrictedStatus);
-        Task SetPermissionsAsync(string id, string permission, bool? allow);
+        Task SetPermissionsAsync(UpdateCollabPermissionsRequest request);
         Task SetUserPermissionsAsync(string id, int userId, string permission, bool? allow);
         List<string> GetPermissionTypes();
         Task<string> CreateAsync(IFormCollection form);

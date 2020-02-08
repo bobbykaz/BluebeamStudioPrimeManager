@@ -2,51 +2,55 @@
 
 <partial name="CollabNavbar" model="@Model" />
 <p>These permissions will be applied to users who have access to this Studio @Model.Collab.Type, but do not have Group or User permissions set.</p>
-<table class="table">
-    <thead class="thead-dark">
-        <tr>
-            <th>
-                Permission Type
-            </th>
-            <th>
-                Current Setting
-            </th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Permissions)
-        {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Type)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Allow)
-            </td>
-            <td>
-                @{
-                    var routeParams = new Dictionary<string, string>
-                            { { "collabId", Model.Collab.Id }, { "type", item.Type }, { "allow", "1"} };
-                    <form asp-action="UpdatePermission" asp-all-route-data="routeParams" method="post"><input type="submit" class="btn btn-outline-primary" value="Set to 'Allow'" /></form>
-                }
-            </td>
-            <td>
-                @{
-                    routeParams["allow"] = "2";
-                    <form asp-action="UpdatePermission" asp-all-route-data="routeParams" method="post"><input type="submit" class="btn btn-outline-danger" value="Set to 'Deny'" /></form>
-                }
-            </td>
-            <td>
-                @{
-                    routeParams["allow"] = "3";
-                    <form asp-action="UpdatePermission" asp-all-route-data="routeParams" method="post"><input type="submit" class="btn btn-outline-info" value="Set to 'Default'" /></form>
-                }
-            </td>
-        </tr>
-        }
-    </tbody>
-</table>
-<div><a asp-action="Index">Back to Studio @Model.Collab.Type</a></div>
+<form asp-action="UpdatePermissions" method="post">
+    <input type="hidden" name="CollabID" value="@Model.Collab.Id" />
+    <table class="table">
+        <thead class="thead-dark">
+            <tr>
+                <th>
+                    Permission Type
+                </th>
+                <th>
+                    Current Setting
+                </th>
+                <th>
+                    New Setting
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                var options = new string[] { "Allow", "Deny", "Default" };
+            }
+            @foreach (var item in Model.Permissions)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Type)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Allow)
+                    </td>
+                    <td>
+                        <select class="custom-select" data-style="btn-info" name="@item.Type" id="@item.Type">
+                            <option selected="selected">
+                                -
+                            </option>
+                            @foreach (var opt in options)
+                            {
+                                if (item.Allow != opt)
+                                {
+                                    <option>
+                                        @opt
+                                    </option>
+                                }
+                            }
+                        </select>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <input type="submit" value="Update Permissions" class="btn btn-primary btn-block" />
+</form>
+<div><a asp-action="Index">Back to Studio @Model.Collab.Type List</a></div>
