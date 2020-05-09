@@ -54,6 +54,8 @@ namespace PrimeCollaborationManager
 
             services.AddSingleton(apiConfig);
 
+            Log.Logger.Information($"App Startup - Using Client {apiConfig.ClientId} - Api {apiConfig.StudioApiBaseUrl} - Auth {apiConfig.AuthorizationEndpoint} - Redirect {apiConfig.CallbackPath}");
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;

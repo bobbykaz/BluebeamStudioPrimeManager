@@ -80,8 +80,11 @@ namespace PrimeCollaborationManager.Services
             await Task.WhenAll(tasks);
         }
 
-        public Collaboration ConvertToCollab(Session session)
+        public static Collaboration ConvertToCollab(Session session)
         {
+            if (session == null)
+                throw new ArgumentNullException(nameof(session));
+
             return new Collaboration()
             {
                 Type = "Session",

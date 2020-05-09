@@ -45,7 +45,6 @@ namespace Studio.Api.Model.Permissions
                     break;
                 default:
                     throw new ArgumentException($"Permission 'Allow' not allowed to have value: {allow}");
-                    break;
             }
         }
 

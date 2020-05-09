@@ -87,8 +87,11 @@ namespace PrimeCollaborationManager.Services
             await _Client.UpdateProjectAsync(id, null, restrictAccess, null, null);
         }
 
-        public Collaboration ConvertToCollab(Project project)
+        public static Collaboration ConvertToCollab(Project project)
         {
+            if(project == null)
+                throw new ArgumentNullException(nameof(project));
+
             return new Collaboration()
             {
                 Type = "Project",

@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  primecollaborationmanager:
+    image: ${DOCKER_REGISTRY-}primecollaborationmanager
+    build:
+      context: .
+      dockerfile: ./PrimeCollaborationManager/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:443;http://+:80
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    ports:
+    - "44332:443"
+    - "44333:80"
