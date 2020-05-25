@@ -1,7 +1,7 @@
 {
   "AWSEBDockerrunVersion": "1",
   "Image": {
-    "Name": "591069284328.dkr.ecr.us-west-1.amazonaws.com/bk-bbprime-mgr",
+    "Name": "591069284328.dkr.ecr.us-west-1.amazonaws.com/bk-bbprime-mgr:0.1.20.05.25",
     "Update": "true"
   },
   "Ports": [

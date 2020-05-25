@@ -1,1 +1,0 @@
-docker push 591069284328.dkr.ecr.us-west-1.amazonaws.com/bk-bbprime-mgr:latest
