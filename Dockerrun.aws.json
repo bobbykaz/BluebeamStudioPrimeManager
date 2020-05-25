@@ -1,0 +1,15 @@
+{
+  "AWSEBDockerrunVersion": "1",
+  "Image": {
+    "Name": "591069284328.dkr.ecr.us-west-1.amazonaws.com/bk-bbprime-mgr",
+    "Update": "true"
+  },
+  "Ports": [
+    {
+      "ContainerPort": "80"
+    },
+    {
+      "ContainerPort": "443"
+    }
+  ]
+}

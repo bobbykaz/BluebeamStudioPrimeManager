@@ -1,0 +1,1 @@
+docker build -t bbprimemgr:0.1 591069284328.dkr.ecr.us-west-1.amazonaws.com/bk-bbprime-mgr:latest -f .\PrimeCollaborationManager\Dockerfile .
