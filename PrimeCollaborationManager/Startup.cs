@@ -1,3 +1,6 @@
+using Certes;
+using FluffySpoon.AspNet.LetsEncrypt;
+using FluffySpoon.AspNet.LetsEncrypt.Certes;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
@@ -10,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
@@ -39,6 +43,42 @@ namespace PrimeCollaborationManager
                 .MinimumLevel.Information()
                 .WriteTo.Console()
                 .CreateLogger();
+
+            //LetsEncrypt
+            if (bool.Parse(Configuration["LetsEncrypt:Enabled"]))
+            {
+                var certEmail = Configuration["LetsEncrypt:Email"];
+                var certCountry = Configuration["LetsEncrypt:CountryName"];
+                var certLocality = Configuration["LetsEncrypt:Locality"];
+                var certState = Configuration["LetsEncrypt:State"];
+                var certOrg = Configuration["LetsEncrypt:Organization"];
+                var certOrgUnit = Configuration["LetsEncrypt:OrganizationUnit"];
+                var certUseStaging = bool.Parse(Configuration["LetsEncrypt:UseStaging"]);
+                var certDomains = Configuration.GetSection("LetsEncrypt:Domains").GetChildren().Select(s => s.Value).ToArray();
+                Log.Logger.Information($"App Startup - Cert info: {certEmail} {certCountry} / {certLocality} / {certState} [{certOrg} {certOrgUnit}] UseStage: {certUseStaging} - Domains: {certDomains}");
+
+                services.AddFluffySpoonLetsEncrypt(new LetsEncryptOptions()
+                {
+                    Email = certEmail, //LetsEncrypt will send you an e-mail here when the certificate is about to expire
+                    UseStaging = certUseStaging, //switch to true for testing
+                    Domains = certDomains,
+                    TimeUntilExpiryBeforeRenewal = TimeSpan.FromDays(30), //renew automatically 30 days before expiry
+                    TimeAfterIssueDateBeforeRenewal = TimeSpan.FromDays(7), //renew automatically 7 days after the last certificate was issued
+                    CertificateSigningRequest = new CsrInfo() //these are your certificate details
+                    {
+                        CountryName = certCountry,
+                        Locality = certLocality,
+                        Organization = certOrg,
+                        OrganizationUnit = certOrgUnit,
+                        State = certState
+                    }
+                });
+            }
+            //the following line tells the library to persist the certificate to a file, so that if the server restarts, the certificate can be re-used without generating a new one.
+            services.AddFluffySpoonLetsEncryptFileCertificatePersistence();
+
+            //the following line tells the library to persist challenges in-memory. challenges are the "/.well-known" URL codes that LetsEncrypt will call.
+            services.AddFluffySpoonLetsEncryptMemoryChallengePersistence();
 
             services.AddMvc();
 

@@ -20,6 +20,7 @@ namespace PrimeCollaborationManager
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.UseUrls(new string[] { "http://*", "https://*" });
                     webBuilder.UseStartup<Startup>();
                 });
     }
