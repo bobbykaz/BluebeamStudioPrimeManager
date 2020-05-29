@@ -24,12 +24,12 @@ namespace PrimeCollaborationManager.Controllers
 
         public IActionResult Index()
         {
-            return View("Index",_Config.ClientId);
+            return View(model: _Config.ClientId);
         }
 
         public IActionResult Help()
         {
-            return View();
+            return View(model: _Config.ClientId); ;
         }
 
         public IActionResult Features()

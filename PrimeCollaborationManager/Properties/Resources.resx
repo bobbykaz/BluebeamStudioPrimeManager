@@ -120,4 +120,13 @@
   <data name="AppName" xml:space="preserve">
     <value>Admin Toolkit</value>
   </data>
+  <data name="CompanyName" xml:space="preserve">
+    <value>Wizard Meridian</value>
+  </data>
+  <data name="SupportEmail" xml:space="preserve">
+    <value>wizard.meridian+support[at]gmail[dot]com</value>
+  </data>
+  <data name="Website" xml:space="preserve">
+    <value>https://wizardmeridian.com</value>
+  </data>
 </root>

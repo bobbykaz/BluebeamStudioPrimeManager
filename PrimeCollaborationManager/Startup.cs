@@ -164,7 +164,10 @@ namespace PrimeCollaborationManager
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
-            app.UseFluffySpoonLetsEncrypt();
+            if (bool.Parse(Configuration["LetsEncrypt:Enabled"]))
+            {
+                app.UseFluffySpoonLetsEncrypt();
+            }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

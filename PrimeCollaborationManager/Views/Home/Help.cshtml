@@ -1,7 +1,31 @@
-﻿@{
-    ViewData["Title"] = "Help & Privacy Policy";
+﻿@model string
+@{
+    ViewData["Title"] = Resources.AppName + " Help & Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
-
-<p>@Resources.AppName conforms to all the Integration requirements set by Bluebeam. This includes keeping detailed application logs for when problems occur. Logs are kept for 7 days and may include your email address, IP addres, and any information related to the activity you were trying to perform if an error occurs.</p>
-<p>If you have a question or would like to report a problem, please email INSERT SUPPORT EMAIL HERE</p>
+<h3> Help & Privacy Policy</h3>
+<h4><a data-toggle="collapse" href="#collapseActivatingApp" role="button" aria-expanded="false" aria-controls="collapseActivatingApp">
+    Activating @Resources.AppName in your Prime
+</a></h4>
+<div class="collapse" id="collapseActivatingApp">
+    <div class="card card-body">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">1. You must be an Administrator of a Studio Prime account.</li>
+            <li class="list-group-item">2. Log in to <a href="https://studio.bluebeam.com">studio.bluebeam.com</a></li>
+            <li class="list-group-item">3. Access the "Integrations" section of the Prime management website.</li>
+            <li class="list-group-item">4. Lookup the integration with the ID "@Model"</li>
+            <li class="list-group-item">5. Enable the integration in the Prime.</li>
+            <li class="list-group-item">6. You should now be able to login via the "Login with Bluebeam" link in @Resources.AppName</li>
+        </ul>
+    </div>
+</div>
+<h4><a data-toggle="collapse" href="#collapsePrivacy" role="button" aria-expanded="false" aria-controls="collapsePrivacy">
+    Privacy Policy
+</a></h4>
+<div class="collapse" id="collapsePrivacy">
+    <div class="card card-body">
+        <p>This application uses browser cookies to function.</p>
+        <p>@Resources.AppName conforms to all the Integration requirements set by Bluebeam. This includes keeping detailed application logs for when problems occur. Our server logs are kept for 7 days and may include your email address, IP address, and any information related to the activity you were trying to perform if an error occurs.</p>
+        <p>If you have any questions or concerns about your data privacy, please email <strong>@Resources.SupportEmail</strong></p>
+    </div>
+</div>
+<p>If you have a question or would like to report a problem, please email <strong>@Resources.SupportEmail</strong> .</p>
