@@ -53,12 +53,15 @@ namespace PrimeCollaborationManager
                 TokenEndpoint = Configuration["StudioApi:AuthServerTokenEndpoint"],
                 StudioApiBaseUrl = Configuration["StudioApi:StudioApiBaseUrl"],
                 AuthorizationEndpoint = Configuration["StudioApi:AuthServerAuthorizeEndpoint"],
-                CallbackPath = Configuration["StudioApi:ClientRedirectPath"]
+                CallbackPath = Configuration["StudioApi:ClientRedirectPath"],
+                ApiResultPageSize = int.Parse(Configuration["StudioApi:ApiResultPageSize"]),
+                TokenRefreshEarlyMinutes = int.Parse(Configuration["StudioApi:MinutesToRefreshBeforeExpiration"]),
             };
 
             services.AddSingleton(apiConfig);
-
-            Log.Logger.Information($"App Startup - Using Client {apiConfig.ClientId} - Api {apiConfig.StudioApiBaseUrl} - Auth {apiConfig.AuthorizationEndpoint} - Redirect {apiConfig.CallbackPath}");
+            int cookieHourTime = int.Parse(Configuration["Settings:CookieExpirationHours"]);
+            int cookieMinTime = int.Parse(Configuration["Settings:CookieExpirationMinutes"]);
+            Log.Logger.Information($"App Startup - Using Client {apiConfig.ClientId} - Api {apiConfig.StudioApiBaseUrl} - Auth {apiConfig.AuthorizationEndpoint} - Redirect {apiConfig.CallbackPath} - PageSize {apiConfig.ApiResultPageSize} - TokenRefreshEarlyMinutes {apiConfig.TokenRefreshEarlyMinutes} - Cookie Expiration {cookieHourTime} hrs {cookieMinTime} minutes");
 
             services.AddAuthentication(options =>
             {
@@ -103,7 +106,7 @@ namespace PrimeCollaborationManager
             })
             .AddCookie(options =>
             {
-                options.ExpireTimeSpan = new TimeSpan(0, 5, 0);
+                options.ExpireTimeSpan = new TimeSpan(cookieHourTime, cookieMinTime, 0);
                 options.SlidingExpiration = false;
                 options.Events = new CookieAuthenticationEvents()
                 {

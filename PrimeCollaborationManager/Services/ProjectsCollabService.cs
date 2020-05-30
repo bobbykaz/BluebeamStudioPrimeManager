@@ -15,17 +15,18 @@ namespace PrimeCollaborationManager.Services
     public class ProjectsCollabService : ICollaborationService
     {
         static readonly string[] PermissionTypes = new string[] { "UndoCheckouts", "CreateSessions", "ShareItems", "Invite", "ManageParticipants", "ManagePermissions", "FullControl" };
-        const int PageSize = 5;
+        private int _PageSize;
 
-        protected IStudioClient _Client { get; set; }
-        public ProjectsCollabService(IStudioClient client)
+        protected IStudioClient Client { get; set; }
+        public ProjectsCollabService(IStudioClient client, int pageSize)
         {
-            _Client = client;
+            Client = client;
+            _PageSize = pageSize;
         }
 
         public async Task<CollaborationList> GetListAsync(int page = 1)
         {
-            var projects = await _Client.GetProjectsList(PageSize, PageSize * (page - 1));
+            var projects = await Client.GetProjectsList(_PageSize, _PageSize * (page - 1));
             var result = new CollaborationList()
             {
                 Collaborations = new PagedResult<Collaboration>()
@@ -33,7 +34,7 @@ namespace PrimeCollaborationManager.Services
                     Items = projects.Projects.Select(p => ConvertToCollab(p)).ToList(),
                     TotalItems = projects.TotalCount,
                     CurrentPage = page,
-                    ItemsPerPage = PageSize,
+                    ItemsPerPage = _PageSize,
                 },
                 ShowStatus = false,
                 ShowTimes = false,
@@ -45,7 +46,7 @@ namespace PrimeCollaborationManager.Services
 
         public async Task<Collaboration> GetDetailsAsync(string id)
         {
-            return ConvertToCollab(await _Client.GetProjectDetails(id));
+            return ConvertToCollab(await Client.GetProjectDetails(id));
         }
 
         public List<string> GetPermissionTypes()
@@ -63,28 +64,28 @@ namespace PrimeCollaborationManager.Services
             var tasks = new List<Task>();
 
             if (Permission.AllowIsValid(request.UndoCheckouts))
-                tasks.Add(_Client.UpdateProjectPermissions(id, new Permission("UndoCheckouts", request.UndoCheckouts)));
+                tasks.Add(Client.UpdateProjectPermissions(id, new Permission("UndoCheckouts", request.UndoCheckouts)));
             if (Permission.AllowIsValid(request.CreateSessions))
-                tasks.Add(_Client.UpdateProjectPermissions(id, new Permission("CreateSessions", request.CreateSessions)));
+                tasks.Add(Client.UpdateProjectPermissions(id, new Permission("CreateSessions", request.CreateSessions)));
             if (Permission.AllowIsValid(request.ShareItems))
-                tasks.Add(_Client.UpdateProjectPermissions(id, new Permission("ShareItems", request.ShareItems)));
+                tasks.Add(Client.UpdateProjectPermissions(id, new Permission("ShareItems", request.ShareItems)));
 
             if (Permission.AllowIsValid(request.Invite))
-                tasks.Add(_Client.UpdateProjectPermissions(id, new Permission("Invite", request.Invite)));
+                tasks.Add(Client.UpdateProjectPermissions(id, new Permission("Invite", request.Invite)));
             if (Permission.AllowIsValid(request.ManageParticipants))
-                tasks.Add(_Client.UpdateProjectPermissions(id, new Permission("ManageParticipants", request.ManageParticipants)));
+                tasks.Add(Client.UpdateProjectPermissions(id, new Permission("ManageParticipants", request.ManageParticipants)));
             if (Permission.AllowIsValid(request.ManagePermissions))
-                tasks.Add(_Client.UpdateProjectPermissions(id, new Permission("ManagePermissions", request.ManagePermissions)));
+                tasks.Add(Client.UpdateProjectPermissions(id, new Permission("ManagePermissions", request.ManagePermissions)));
 
             if (Permission.AllowIsValid(request.FullControl))
-                tasks.Add(_Client.UpdateProjectPermissions(id, new Permission("FullControl", request.FullControl)));
+                tasks.Add(Client.UpdateProjectPermissions(id, new Permission("FullControl", request.FullControl)));
 
             await Task.WhenAll(tasks);
         }
 
         public async Task UpdateCollaborationAccessAsync(string id, bool restrictAccess)
         {
-            await _Client.UpdateProjectAsync(id, null, restrictAccess, null, null);
+            await Client.UpdateProjectAsync(id, null, restrictAccess, null, null);
         }
 
         public static Collaboration ConvertToCollab(Project project)
@@ -107,6 +108,9 @@ namespace PrimeCollaborationManager.Services
 
         public async Task<string> CreateAsync(IFormCollection form)
         {
+            if (form == null)
+                throw new ArgumentNullException(nameof(form));
+
             string name = "Default";
             bool restricted = false;
             bool notification = false;
@@ -138,7 +142,7 @@ namespace PrimeCollaborationManager.Services
                 }
             }
 
-            var projectId = await _Client.CreateProject(name, notification, restricted);
+            var projectId = await Client.CreateProject(name, notification, restricted);
 
             var chosenPermTypes = pList.Select(s => s.Type).ToList();
             var missingTypes = GetPermissionTypes();
@@ -150,7 +154,7 @@ namespace PrimeCollaborationManager.Services
             
             foreach (var perm in pList)
             {
-                await _Client.UpdateProjectPermissions(projectId, perm);
+                await Client.UpdateProjectPermissions(projectId, perm);
             }
 
             return projectId;
@@ -158,7 +162,7 @@ namespace PrimeCollaborationManager.Services
 
         public async Task<List<Permission>> GetPermissionsAsync(string id)
         {
-            var perms = await _Client.GetProjectPermissions(id);
+            var perms = await Client.GetProjectPermissions(id);
             var displayedPermsList = PermissionTypes.ToList();
             perms.ProjectPermissions = perms.ProjectPermissions.Where(p => displayedPermsList.Contains(p.Type)).ToList();
             return perms.ProjectPermissions;
@@ -166,19 +170,19 @@ namespace PrimeCollaborationManager.Services
 
         public async Task<PagedResult<User>> GetUsersAsync(string id, int page = 1)
         {
-            var response = await _Client.GetProjectUsers(id, PageSize, PageSize * (page - 1));
+            var response = await Client.GetProjectUsers(id, _PageSize, _PageSize * (page - 1));
             return new PagedResult<User>()
             {
                 Items = response.ProjectUsers,
                 TotalItems = response.TotalCount,
                 CurrentPage = page,
-                ItemsPerPage = PageSize
+                ItemsPerPage = _PageSize
             };
         }
 
         public async Task UpdateUserRestrictedStatusAsync(string id, int userId, string restrictedStatus)
         {
-            await _Client.UpdateProjectUserRestrictedStatus(id, userId, restrictedStatus);
+            await Client.UpdateProjectUserRestrictedStatus(id, userId, restrictedStatus);
         }
 
         public Task SetUserPermissionsAsync(string id, int userId, string permission, bool? allow)

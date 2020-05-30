@@ -9,5 +9,7 @@
         public string AuthorizationEndpoint { get; set; }
         public string UserInformationEndpoint { get { return $"{StudioApiBaseUrl}/users/me"; } }
         public string CallbackPath { get; set; }
+        public int ApiResultPageSize { get; set; }
+        public int TokenRefreshEarlyMinutes { get; set; }
     }
 }

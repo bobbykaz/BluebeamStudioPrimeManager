@@ -15,17 +15,18 @@ namespace PrimeCollaborationManager.Services
     public class SessionsCollabService : ICollaborationService
     {
         static readonly string[] PermissionTypes = new string[] { "SaveCopy", "PrintCopy", "Markup", "AddDocuments", "MarkupAlert", "FullControl" };
-        const int PageSize = 5;
+        private int _PageSize;
 
-        protected IStudioClient _Client { get; set; }
-        public SessionsCollabService(IStudioClient client)
+        protected IStudioClient Client { get; set; }
+        public SessionsCollabService(IStudioClient client, int pageSize)
         {
-            _Client = client;
+            Client = client;
+            _PageSize = pageSize;
         }
 
         public async Task<CollaborationList> GetListAsync(int page = 1)
         {
-            var sessions = await _Client.GetSessionsList(PageSize, PageSize * (page - 1));
+            var sessions = await Client.GetSessionsList(_PageSize, _PageSize * (page - 1));
             var result = new CollaborationList()
             {
                 Collaborations = new PagedResult<Collaboration>()
@@ -33,7 +34,7 @@ namespace PrimeCollaborationManager.Services
                     Items = sessions.Sessions.Select(p => ConvertToCollab(p)).ToList(),
                     TotalItems = sessions.TotalCount,
                     CurrentPage = page,
-                    ItemsPerPage = PageSize,
+                    ItemsPerPage = _PageSize,
                 },
                 ShowStatus = true,
                 ShowTimes = false,
@@ -45,7 +46,7 @@ namespace PrimeCollaborationManager.Services
 
         public async Task<Collaboration> GetDetailsAsync(string id)
         {
-            return ConvertToCollab(await _Client.GetSessionDetails(id));
+            return ConvertToCollab(await Client.GetSessionDetails(id));
         }
 
         public List<string> GetPermissionTypes()
@@ -63,19 +64,19 @@ namespace PrimeCollaborationManager.Services
             var tasks = new List<Task>();
 
             if (Permission.AllowIsValid(request.SaveCopy))
-                tasks.Add(_Client.UpdateSessionPermissions(id, new Permission("SaveCopy", request.SaveCopy)));
+                tasks.Add(Client.UpdateSessionPermissions(id, new Permission("SaveCopy", request.SaveCopy)));
             if (Permission.AllowIsValid(request.PrintCopy))
-                tasks.Add(_Client.UpdateSessionPermissions(id, new Permission("PrintCopy", request.PrintCopy)));
+                tasks.Add(Client.UpdateSessionPermissions(id, new Permission("PrintCopy", request.PrintCopy)));
             
             if (Permission.AllowIsValid(request.Markup))
-                tasks.Add(_Client.UpdateSessionPermissions(id, new Permission("Markup", request.Markup)));
+                tasks.Add(Client.UpdateSessionPermissions(id, new Permission("Markup", request.Markup)));
             if (Permission.AllowIsValid(request.AddDocuments))
-                tasks.Add(_Client.UpdateSessionPermissions(id, new Permission("AddDocuments", request.AddDocuments)));
+                tasks.Add(Client.UpdateSessionPermissions(id, new Permission("AddDocuments", request.AddDocuments)));
             if (Permission.AllowIsValid(request.MarkupAlert))
-                tasks.Add(_Client.UpdateSessionPermissions(id, new Permission("MarkupAlert", request.MarkupAlert)));
+                tasks.Add(Client.UpdateSessionPermissions(id, new Permission("MarkupAlert", request.MarkupAlert)));
 
             if (Permission.AllowIsValid(request.FullControl))
-                tasks.Add(_Client.UpdateSessionPermissions(id, new Permission("FullControl", request.FullControl)));
+                tasks.Add(Client.UpdateSessionPermissions(id, new Permission("FullControl", request.FullControl)));
 
             await Task.WhenAll(tasks);
         }
@@ -101,6 +102,9 @@ namespace PrimeCollaborationManager.Services
 
         public async Task<string> CreateAsync(IFormCollection form)
         {
+            if (form == null)
+                throw new ArgumentNullException(nameof(form));
+
             string name = "Default";
             bool restricted = false;
             bool notification = false;
@@ -132,7 +136,7 @@ namespace PrimeCollaborationManager.Services
                 }
             }
 
-            var id = await _Client.CreateSession(name, notification, restricted);
+            var id = await Client.CreateSession(name, notification, restricted);
 
             var chosenPermTypes = pList.Select(s => s.Type).ToList();
             var missingTypes = GetPermissionTypes();
@@ -144,7 +148,7 @@ namespace PrimeCollaborationManager.Services
 
             foreach (var perm in pList)
             {
-                await _Client.UpdateSessionPermissions(id, perm);
+                await Client.UpdateSessionPermissions(id, perm);
             }
 
             return id;
@@ -152,30 +156,30 @@ namespace PrimeCollaborationManager.Services
 
         public async Task<List<Permission>> GetPermissionsAsync(string id)
         {
-            var perms = await _Client.GetSessionPermissions(id);
+            var perms = await Client.GetSessionPermissions(id);
             return perms.SessionPermissions;
         }
 
         public async Task<PagedResult<User>> GetUsersAsync(string id, int page = 1)
         {
-            var response = await _Client.GetSessionUsers(id, PageSize, PageSize * (page - 1));
+            var response = await Client.GetSessionUsers(id, _PageSize, _PageSize * (page - 1));
             return new PagedResult<User>()
             {
                 Items = response.SessionUsers,
                 TotalItems = response.TotalCount,
                 CurrentPage = page,
-                ItemsPerPage = PageSize
+                ItemsPerPage = _PageSize
             };
         }
 
         public async Task UpdateCollaborationAccessAsync(string id, bool restrictAccess)
         {
-            await _Client.UpdateSessionAsync(id, null, restrictAccess, null, null, null, null);
+            await Client.UpdateSessionAsync(id, null, restrictAccess, null, null, null, null);
         }
 
         public async Task UpdateUserRestrictedStatusAsync(string id, int userId, string restrictedStatus)
         {
-            await _Client.UpdateSessionUserRestrictedStatus(id, userId, restrictedStatus);
+            await Client.UpdateSessionUserRestrictedStatus(id, userId, restrictedStatus);
         }
 
         public Task SetUserPermissionsAsync(string id, int userId, string permission, bool? allow)

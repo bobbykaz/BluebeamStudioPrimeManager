@@ -18,6 +18,9 @@ namespace PrimeCollaborationManager
             if(ctx == null)
                 throw new ArgumentException("ctx is missing from Refresh method");
 
+            if (cfg == null)
+                throw new ArgumentException("cfg is missing from Refresh method");
+
             if (ctx.Properties.ExpiresUtc < DateTime.Now)
             {
                 ctx.RejectPrincipal();
@@ -31,7 +34,7 @@ namespace PrimeCollaborationManager
                 {
                     DateTime expTime;
                     bool istime = DateTime.TryParse(expiresAt, out expTime);
-                    if (istime && expTime.AddMinutes(-30) < DateTime.Now)
+                    if (istime && expTime.AddMinutes(-cfg.TokenRefreshEarlyMinutes) < DateTime.Now)
                     {
                         var currentUser = UserHelper.GetCurrentUser(ctx.HttpContext);
 

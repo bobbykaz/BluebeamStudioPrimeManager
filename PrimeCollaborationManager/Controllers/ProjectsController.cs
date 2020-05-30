@@ -36,7 +36,7 @@ namespace PrimeCollaborationManager.Controllers
             Client = new StudioClient(Config, UserLog, Log.Logger);
             var token = await HttpContext.GetTokenAsync("access_token");
             Client.SetAuthHeader(token);
-            CollaborationService = new ProjectsCollabService(Client);
+            CollaborationService = new ProjectsCollabService(Client, Config.ApiResultPageSize);
         }
 
         public async Task<IActionResult> Index(int page = 1)
@@ -113,6 +113,9 @@ namespace PrimeCollaborationManager.Controllers
         {
             try
             {
+                if (request == null)
+                    return BadRequest();
+
                 await InitClient();
                 await CollaborationService.SetPermissionsAsync(request);
                 return RedirectToAction("PermissionDetails", new Dictionary<string, string> { { "collabId", request.CollabId } });

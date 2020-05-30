@@ -19,13 +19,21 @@
             @Html.DisplayNameFor(model => model.Collab.Restricted)
         </dt>
         <dd class="col-sm-10 d-inline">
-            @Html.DisplayFor(model => model.Collab.Restricted)
-            @{ 
-                string RestrictedStatus = Model.Collab.Restricted ? "Unrestrict Access" : "Restrict Access";
-                string newRestrictedStatus = Model.Collab.Restricted ? "false" : "true";
-                var detailParam = new Dictionary<string, string> { { "collabId", Model.Collab.Id }, { "newRestrictedStatus", newRestrictedStatus } };
-            }
-            <form asp-action="UpdateAccess" asp-all-route-data="detailParam" ><input type="submit" class="btn btn-outline-info" value="@RestrictedStatus" /></form>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-auto">
+                        @Html.DisplayFor(model => model.Collab.Restricted)
+                    </div>
+                    <div class="col-md-auto">
+                        @{
+                            string RestrictedStatus = Model.Collab.Restricted ? "Unrestrict Access" : "Restrict Access";
+                            string newRestrictedStatus = Model.Collab.Restricted ? "false" : "true";
+                            var detailParam = new Dictionary<string, string> { { "collabId", Model.Collab.Id }, { "newRestrictedStatus", newRestrictedStatus } };
+                        }
+                        <form asp-action="UpdateAccess" asp-all-route-data="detailParam"><input type="submit" class="btn btn-outline-info" value="@RestrictedStatus" /></form>
+                    </div>
+                </div>
+            </div>
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Collab.Created)
