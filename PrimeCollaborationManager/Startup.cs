@@ -18,6 +18,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace PrimeCollaborationManager
 {
@@ -79,7 +80,7 @@ namespace PrimeCollaborationManager
                 options.AuthorizationEndpoint = apiConfig.AuthorizationEndpoint;
                 options.TokenEndpoint = apiConfig.TokenEndpoint;
                 options.UserInformationEndpoint = apiConfig.UserInformationEndpoint;
-
+                options.AccessDeniedPath = new PathString("/Home/Denied");
                 options.SaveTokens = true;
 
                 options.ClaimActions.MapJsonKey(ClaimTypes.Email, "Email");
@@ -101,6 +102,16 @@ namespace PrimeCollaborationManager
                         var user = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
 
                         context.RunClaimActions(user.RootElement);
+                    },
+                    OnRemoteFailure = context =>
+                    {
+                        Log.Logger.Warning($"Remote Failure: {context.Failure}");
+                        if (context.Failure.Message == "user_denied_authorization")
+                        {
+                            context.Response.Redirect("/Home/Denied");
+                            context.HandleResponse();
+                        }
+                        return Task.CompletedTask;
                     }
                 };
             })

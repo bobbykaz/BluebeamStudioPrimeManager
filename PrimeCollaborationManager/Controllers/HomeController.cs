@@ -37,6 +37,11 @@ namespace PrimeCollaborationManager.Controllers
             return View();
         }
 
+        public IActionResult Denied()
+        {
+            return View();
+        }
+
         [HttpPost]
         public IActionResult UserLogin(string returnUrl = "/")
         {
