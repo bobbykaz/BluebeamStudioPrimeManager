@@ -197,7 +197,7 @@ namespace PrimeCollaborationManager.Controllers
         }
         #endregion
 
-        private IActionResult HandleError(StudioApiException e)
+        protected IActionResult HandleError(StudioApiException e)
         {
             Log.Logger.Error("Error encountered; User: {@User}; Exception: {Exception}", UserLog, e);
             return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier, StudioError = e });

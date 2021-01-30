@@ -11,15 +11,21 @@
                     var generalClass = "nav-item active";
                     var permClass = "nav-item";
                     var userClass = "nav-item";
+                    var activityClass = "nav-item";
                     if (Model.Permissions != null)
-                    { 
+                    {
                         generalClass = "nav-item";
                         permClass = "nav-item active";
                     }
                     if (Model.Users != null)
-                    { 
+                    {
                         generalClass = "nav-item";
                         userClass = "nav-item active";
+                    }
+                    if (Model.IsSessionActivityPage)
+                    {
+                        generalClass = "nav-item";
+                        activityClass = "nav-item active";
                     }
                 }
                 <li class="@generalClass">
@@ -31,6 +37,12 @@
                 <li class="@userClass">
                     <a class="nav-link" asp-action="UserList" asp-all-route-data="detailParam">Users </a>
                 </li>
+                @if (Model.Collab.Type == "Session")
+                {
+                <li class="@activityClass">
+                    <a class="nav-link" asp-action="Activity" asp-all-route-data="detailParam">Activity </a>
+                </li>
+                }
             </ul>
         </div>
     </nav>

@@ -17,5 +17,8 @@ namespace PrimeCollaborationManager.Services
         Task SetUserPermissionsAsync(string id, int userId, string permission, bool? allow);
         List<string> GetPermissionTypes();
         Task<string> CreateAsync(IFormCollection form);
+
+        //Session-specific
+        Task<Models.PagedResult<Models.SessionActivityRecord>> GetActivity(string id, int page = 1);
     }
 }

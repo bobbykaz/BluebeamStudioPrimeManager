@@ -189,5 +189,10 @@ namespace PrimeCollaborationManager.Services
         {
             throw new NotImplementedException();
         }
+
+        public Task<PagedResult<SessionActivityRecord>> GetActivity(string id, int page = 1)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

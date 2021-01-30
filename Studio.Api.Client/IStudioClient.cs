@@ -26,6 +26,7 @@ namespace Studio.Api.Client
         Task<Session> GetSessionDetails(string id);
         Task<SessionPermissionsList> GetSessionPermissions(string sessionId);
         Task<SessionsList> GetSessionsList(int limit = 100, int offset = 0);
+        Task<SessionActivityList> GetSessionActivity(string id, int limit = 100, int offset = 0);
         Task<SessionPermissionsList> GetSessionUserPermissions(string sessionId, int userId);
         Task<SessionUsersList> GetSessionUsers(string sessionId, int limit = 100, int offset = 0);
         Task<StudioOAuthToken> RefreshToken(string refreshToken);

@@ -8,7 +8,7 @@ namespace PrimeCollaborationManager.Models
     public class PagedResult<T>
     {
         public List<T> Items { get; set; }
-        public int TotalItems { get; set; }
+        public long TotalItems { get; set; }
         public int CurrentPage { get; set; }
         public int ItemsPerPage { get; set; }
 
@@ -27,7 +27,7 @@ namespace PrimeCollaborationManager.Models
 
     public class PagedResultDisplay
     {
-        public int TotalItems { get; set; }
+        public long TotalItems { get; set; }
         public int CurrentPage { get; set; }
         public int ItemsPerPage { get; set; }
         public string ControllerAction { get; set; }

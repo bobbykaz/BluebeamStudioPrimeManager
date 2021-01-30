@@ -32,5 +32,6 @@ namespace PrimeCollaborationManager.Models
         public List<Permission> Permissions { get; set; }
         public PagedResult<User> Users { get; set; }
         public bool ShowStatus { get; set; }
+        public bool IsSessionActivityPage { get; set; }
     }
 }

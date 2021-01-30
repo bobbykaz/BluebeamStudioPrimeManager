@@ -1,0 +1,50 @@
+﻿@model SessionActivity
+
+<partial name="CollabNavbar" model="@Model.CollaborationDetails" />
+<table class="table">
+    <thead class="thead-dark">
+        <tr>
+            <th>
+                #
+            </th>
+            <th>
+                Name
+            </th>
+            <th>
+                Message
+            </th>
+            <th>
+                Timestamp
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int collabNum = 1 + (Model.Activities.CurrentPage - 1) * Model.Activities.ItemsPerPage;
+        }
+        @foreach (var item in Model.Activities.Items)
+        {
+            <tr>
+                <td>
+                    @collabNum
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Message)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Timestamp)
+                </td>
+            </tr>
+            collabNum = collabNum + 1;
+        }
+    </tbody>
+</table>
+@{
+    var pagedResultDisplay = Model.Activities.GetModelForDisplay("Activity");
+    pagedResultDisplay.ActionParams["collabId"] = Model.CollaborationDetails.Collab.Id;
+}
+<partial name="PagedResultNavBar" model="pagedResultDisplay" />
+<div>    <a asp-action="Index">Back to Studio @Model.CollaborationDetails.Collab.Type List</a></div>

@@ -28,5 +28,25 @@ namespace PrimeCollaborationManager.Controllers
             Client.SetAuthHeader(token);
             CollaborationService = new SessionsCollabService(Client, Config.ApiResultPageSize);
         }
+
+        #region Activity
+        public async Task<IActionResult> Activity(string collabId, int page = 1)
+        {
+            try
+            {
+                await InitClient();
+                var detail = CollaborationService.GetDetailsAsync(collabId);
+                var ars = CollaborationService.GetActivity(collabId, page);
+                await Task.WhenAll(detail, ars);
+                var cd = new CollaborationDetails { Collab = detail.Result};
+                var model = new SessionActivity { Activities = ars.Result, CollaborationDetails = cd };
+                return View(model);
+            }
+            catch (StudioApiException e)
+            {
+                return HandleError(e);
+            }
+        }
+        #endregion
     }
 }

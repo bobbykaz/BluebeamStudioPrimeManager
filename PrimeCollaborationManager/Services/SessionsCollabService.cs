@@ -95,7 +95,7 @@ namespace PrimeCollaborationManager.Services
                 InviteUrl = session.InviteUrl,
                 Owner = session.OwnerEmail,
                 Restricted = session.Restricted,
-                Status = "Active", 
+                Status = session.Status, 
                 EndDate = session.SessionEndDate
             };
         }
@@ -185,6 +185,42 @@ namespace PrimeCollaborationManager.Services
         public Task SetUserPermissionsAsync(string id, int userId, string permission, bool? allow)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<PagedResult<SessionActivityRecord>> GetActivity(string id, int page = 1)
+        {
+            var usersTask = Client.GetSessionUsers(id, 500, 0);
+            var actTask = Client.GetSessionActivity(id, _PageSize, _PageSize * (page - 1));
+
+            await Task.WhenAll(usersTask, actTask);
+
+            var users = usersTask.Result;
+            var act = actTask.Result;
+
+            var usersDict = users.SessionUsers.ToDictionary(u => u.Id);
+            var items = new List<SessionActivityRecord>();
+            foreach (var a in act.SessionActivities)
+            {
+                User u = null;
+                if (usersDict.ContainsKey(a.UserId))
+                    u = usersDict[a.UserId];
+                var ar = new SessionActivityRecord
+                {
+                    Email = u?.Email ?? $"<{a.UserId}>",
+                    Name = u?.Name ?? $"<{a.UserId}>",
+                    Message = a.Message,
+                    Timestamp = a.Created
+                };
+                items.Add(ar);
+            }
+
+            return new PagedResult<SessionActivityRecord>()
+            {
+                Items = items,
+                TotalItems = act.TotalCount,
+                CurrentPage = page,
+                ItemsPerPage = _PageSize
+            };
         }
     }
 }

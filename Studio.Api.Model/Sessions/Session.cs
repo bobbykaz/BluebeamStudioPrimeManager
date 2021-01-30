@@ -13,12 +13,13 @@ namespace Studio.Api.Model.Sessions
         public DateTime Created { get; set; }
         public string InviteUrl { get; set; }
         public DateTime? SessionEndDate { get; set; }
+        public string Status { get; set; }
     }
 
     public class SessionsList
     { 
         public List<Session> Sessions { get; set; }
-        public int TotalCount { get; set; }
+        public long TotalCount { get; set; }
     }
 
     public class CreateSessionRequest

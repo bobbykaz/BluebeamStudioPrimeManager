@@ -220,6 +220,11 @@ namespace Studio.Api.Client
         {
             return await Get<Session>($"sessions/{id}");
         }
+
+        public async Task<SessionActivityList> GetSessionActivity(string id, int limit = 100, int offset = 0)
+        {
+            return await Get<SessionActivityList>($"sessions/{id}/activities?offset={offset}&limit={limit}");
+        }
         #endregion
 
         #region Projects
