@@ -38,7 +38,7 @@ namespace PrimeCollaborationManager.Controllers
                 var detail = CollaborationService.GetDetailsAsync(collabId);
                 var ars = CollaborationService.GetActivity(collabId, page);
                 await Task.WhenAll(detail, ars);
-                var cd = new CollaborationDetails { Collab = detail.Result};
+                var cd = new CollaborationDetails { Collab = detail.Result, IsSessionActivityPage = true};
                 var model = new SessionActivity { Activities = ars.Result, CollaborationDetails = cd };
                 return View(model);
             }
