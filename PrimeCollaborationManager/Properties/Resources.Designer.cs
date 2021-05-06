@@ -61,7 +61,7 @@ namespace PrimeCollaborationManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Admin Toolkit.
+        ///   Looks up a localized string similar to Example App Name.
         /// </summary>
         public static string AppName {
             get {
@@ -70,7 +70,7 @@ namespace PrimeCollaborationManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Wizard Meridian.
+        ///   Looks up a localized string similar to Example Company Name.
         /// </summary>
         public static string CompanyName {
             get {
@@ -79,7 +79,7 @@ namespace PrimeCollaborationManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to wizard.meridian+support[at]gmail[dot]com.
+        ///   Looks up a localized string similar to ExampleEmail[At]example[dot]com.
         /// </summary>
         public static string SupportEmail {
             get {
@@ -88,7 +88,7 @@ namespace PrimeCollaborationManager.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to https://wizardmeridian.com.
+        ///   Looks up a localized string similar to https://example.com.
         /// </summary>
         public static string Website {
             get {

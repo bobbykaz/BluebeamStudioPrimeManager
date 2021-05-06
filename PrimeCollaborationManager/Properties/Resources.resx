@@ -118,15 +118,15 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AppName" xml:space="preserve">
-    <value>Admin Toolkit</value>
+    <value>Example App Name</value>
   </data>
   <data name="CompanyName" xml:space="preserve">
-    <value>Wizard Meridian</value>
+    <value>Example Company Name</value>
   </data>
   <data name="SupportEmail" xml:space="preserve">
-    <value>wizard.meridian+support[at]gmail[dot]com</value>
+    <value>Example Email [at] Example [Dot] Com</value>
   </data>
   <data name="Website" xml:space="preserve">
-    <value>https://wizardmeridian.com</value>
+    <value>https://example.com</value>
   </data>
 </root>
