@@ -21,5 +21,4 @@ RUN dotnet publish "PrimeCollaborationManager.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENV BobbyOtherTest="true"
 ENTRYPOINT ["dotnet", "PrimeCollaborationManager.dll"]
